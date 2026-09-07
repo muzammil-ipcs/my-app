@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.38 31.2">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #121212;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g id="credit_card_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24" data-name="credit card 24dp E3E3E3 FILL0 wght400 GRAD0 opsz24">
+      <path class="cls-1" d="M38.42.99c-.6-.63-1.43-.99-2.29-.99H3.26c-.85,0-1.68.35-2.28.97C.34,1.59-.01,2.43,0,3.31v24.58c-.01.88.34,1.73.97,2.33.61.63,1.45.99,2.3.99h32.86c.85,0,1.68-.35,2.28-.97.64-.62.99-1.47.98-2.34V3.32c.01-.88-.33-1.73-.97-2.33ZM36.46,7.81H2.92V2.93h33.54v4.88ZM36.46,28.28H2.92v-13.07h33.54v13.07Z"/>
+    </g>
+  </g>
+</svg>
