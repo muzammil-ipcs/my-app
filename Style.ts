@@ -520,6 +520,24 @@ export const cardstyle = StyleSheet.create({
     backgroundColor: 'white',
     width: '100%',
   },
+  paid: {
+    margin: 10,
+    alignSelf: 'center',
+    borderRadius: 20,
+    width: '100%',
+    marginLeft: 80,
+
+  },
+  paidtxttitle: {
+    opacity: 0.6,
+    fontSize: 14,
+    margin:4
+  },
+  paidtxt:{
+    fontSize:14,
+    padding:5,
+
+  }
 });
 
 export const Createcardstyle = StyleSheet.create({
@@ -603,7 +621,7 @@ export const Createcardstyle = StyleSheet.create({
   profileimg: {
     width: '100%',
     height: '100%',
-    borderRadius:20,
+    borderRadius: 20,
   },
   frame1: {
     position: 'absolute',
@@ -624,7 +642,7 @@ export const Createcardstyle = StyleSheet.create({
     borderTopColor: 'black',
     borderWidth: 0.5,
 
-    zIndex:2 ,
+    zIndex: 2,
     elevation: 10,
   },
   name: {
@@ -725,7 +743,7 @@ export const bgimage = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     alignSelf: 'center',
-    padding:2
+    padding: 2,
   },
   txt: {
     margin: 5,
@@ -746,15 +764,13 @@ export const bgimage = StyleSheet.create({
     height: 3,
     backgroundColor: '#FE3D12',
   },
-  addimgview:{
-    backgroundColor:"#222",
-    padding:20,
-    width:160,
-    height:100,
-    alignItems:"center",
-    borderRadius:20,
-    margin:10,
-
-
-  }
+  addimgview: {
+    backgroundColor: '#222',
+    padding: 20,
+    width: 160,
+    height: 100,
+    alignItems: 'center',
+    borderRadius: 20,
+    margin: 10,
+  },
 });
