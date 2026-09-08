@@ -10,11 +10,20 @@ import {
 import { stylehome } from '../Style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export function Plans() {
+export function Plans({ navigation, route }: any) {
   const [yearly, setYearly] = useState(false);
 
   const [plan1, setPlan1] = useState<any>('');
   const [plan2, setPlan2] = useState<any>('');
+
+  useEffect(() => {
+    const status = route?.params?.status;
+    if (status === 'success') {
+      navigation.replace('Dashboard');
+    } else if (status === 'cancel') {
+      navigation.setParams({ status: undefined });
+    }
+  }, [route?.params?.status, navigation]);
 
   useEffect(() => {
     async function GetPlan() {
@@ -55,7 +64,7 @@ export function Plans() {
           body: JSON.stringify({
             planId: plan1,
             billingCycle: yearly ? 'yearly' : 'monthly',
-            returnTo: 'create-card',
+            returnTo: 'create-card-mobile',
           }),
         },
       );
@@ -85,7 +94,7 @@ export function Plans() {
           body: JSON.stringify({
             planId: plan2,
             billingCycle: yearly ? 'yearly' : 'monthly',
-            returnTo: 'create-card',
+            returnTo: 'create-card-mobile',
           }),
         },
       );

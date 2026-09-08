@@ -39,9 +39,21 @@ export type RootStackParamList = {
 
 type MainNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
+// Lets Stripe Checkout hand control back to the app (see
+// makemycard-api's "create-card-mobile" success/cancel URLs) instead of
+// stranding the user on a website page in the device browser.
+const linking = {
+  prefixes: ['makemycard://'],
+  config: {
+    screens: {
+      subscription: 'subscription',
+    },
+  },
+};
+
 function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator>
         <Stack.Screen
           name="splashscreen"
