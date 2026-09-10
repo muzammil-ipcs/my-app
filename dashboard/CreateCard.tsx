@@ -17,8 +17,7 @@ import Linkedin from '../assets/linkedin.svg';
 import Twitter from '../assets/X.svg';
 import { Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function Creatcard() {
   const [step, setStep] = useState<any>('1');
@@ -40,14 +39,70 @@ export function Creatcard() {
   const [x, setX] = useState('');
 
   const [msg, setMsg] = useState('');
-  const emailtest = /^[^\s@]+@[^\s@]+\.[^\@]+$/;
+  const emailtest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const [mobile, setMobile] = useState('');
   const [countrycode, setCountrycode] = useState<CountryCode>('US');
   const [callcode, setCallcode] = useState('1');
   const fullnnumber = '+ ' + callcode + ' ' + mobile;
-  // const [stripurl,setStripurl]=useState("")
+
   const naviagtion = useNavigation<any>();
+
+  
+
+  async function Createbcard() {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      console.log('token:', token);
+      const user_id = await AsyncStorage.getItem('user_Id');
+      console.log('user_id:', user_id); 
+
+      const Carddata = {
+        user_id: user_id,
+        firstName: name.firstname,
+        lastName: name.lastname,
+        namePrefix: name.prefix,
+
+        role: role,
+        title: role,
+
+        cellPhone: `+${callcode}${mobile}`,
+        email: email,
+
+        url: website,
+        calendly: candly,
+
+        sociallink_facebook: facebook,
+        sociallink_instagram: insta,
+        sociallink_linkedIn: linkedin,
+        sociallink_twitter: x,
+
+        profile_photo: profilelogo,
+        comapny_logo: componylogo,
+      };
+      console.log("Detailsfilled",Carddata)
+      console.log("Adding data.....")
+
+      const response = await fetch(
+        'http://10.0.2.2:5004/api/businesscard/createBcard',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(Carddata),
+        },
+      );
+
+      const Data = await response.json();
+      console.log("Full api response",Data);
+    } catch(error){
+      console.log('something went wrong ', error);
+    }
+  }
+
+  
 
   function Checkinput() {
     if (open === '1') {
@@ -72,15 +127,6 @@ export function Creatcard() {
     setMsg('');
   }
 
-
-
-
-
-
-
-
-
-
   const scrollX = useRef(new Animated.Value(0)).current;
   const scroll =
     (website !== '' ? 1 : 0) +
@@ -91,27 +137,21 @@ export function Creatcard() {
 
   useEffect(() => {
     if (scroll === 3) {
-     
-          Animated.timing(scrollX, {
-            toValue: -30,
-            duration: 2000,
-            useNativeDriver: true,
-          }).start();
-         
-      
+      Animated.timing(scrollX, {
+        toValue: -30,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start();
     } else if (scroll > 3) {
-    
-          Animated.timing(scrollX, {
-            toValue: -70,
-            duration: 2000,
-            useNativeDriver: true,
-          }).start();
-          
-      
+      Animated.timing(scrollX, {
+        toValue: -70,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start();
     } else {
       scrollX.setValue(0);
     }
-  },);
+  });
 
   function Addimages(Type: string) {
     console.log('call lunchimagelabrary');
@@ -139,7 +179,7 @@ export function Creatcard() {
   return (
     <View style={{ flex: 1, backgroundColor: '#F5F2E9' }}>
       <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={[Createcardstyle.frame1,{pointerEvents:"none"}]}>
+        <View style={[Createcardstyle.frame1, { pointerEvents: 'none' }]}>
           {componylogo ? (
             <Image
               source={{ uri: componylogo }}
@@ -219,14 +259,15 @@ export function Creatcard() {
                 {website !== '' && (
                   <Pressable
                     onPress={() => {
-                      const url = website.startsWith("https://")?
-                      website : "https://" + website
+                      const url = website.startsWith('https://')
+                        ? website
+                        : 'https://' + website;
                       Linking.openURL(url);
-                      console.log(website)
+                      console.log(website);
                     }}
                   >
                     <View>
-                    <Website width={24} height={24} style={{ margin: 5}} />
+                      <Website width={24} height={24} style={{ margin: 5 }} />
                     </View>
                   </Pressable>
                 )}
@@ -236,12 +277,7 @@ export function Creatcard() {
                       Linking.openURL(facebook);
                     }}
                   >
-                    <Facebook
-                      width={24}
-                      height={24}
-                      style={{ margin: 5 }}
-                      
-                    />
+                    <Facebook width={24} height={24} style={{ margin: 5 }} />
                   </Pressable>
                 )}
 
@@ -251,11 +287,7 @@ export function Creatcard() {
                       Linking.openURL(insta);
                     }}
                   >
-                    <Insta
-                      width={24}
-                      height={24}
-                      style={{ margin: 5 }}
-                    />
+                    <Insta width={24} height={24} style={{ margin: 5 }} />
                   </Pressable>
                 )}
 
@@ -265,11 +297,7 @@ export function Creatcard() {
                       Linking.openURL(linkedin);
                     }}
                   >
-                    <Linkedin
-                      width={24}
-                      height={24}
-                      style={{ margin: 5 }}
-                    />
+                    <Linkedin width={24} height={24} style={{ margin: 5 }} />
                   </Pressable>
                 )}
 
@@ -279,12 +307,7 @@ export function Creatcard() {
                       Linking.openURL(x);
                     }}
                   >
-                    <Twitter
-                      width={24}
-                      height={24}
-                      style={{ margin: 5 }}
-                    
-                    />
+                    <Twitter width={24} height={24} style={{ margin: 5 }} />
                   </Pressable>
                 )}
               </Animated.View>
@@ -309,11 +332,7 @@ export function Creatcard() {
             >
               1
             </Text>
-            
-        
           </View>
-         
-          
 
           <View
             style={
@@ -325,7 +344,6 @@ export function Creatcard() {
             >
               2
             </Text>
-            
           </View>
 
           <View
@@ -412,7 +430,15 @@ export function Creatcard() {
             </Text>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor: name.firstname.trim() === ""? "#E5E0D3" : "white"}]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  {
+                    backgroundColor:
+                      name.firstname.trim() === '' ? '#E5E0D3' : 'white',
+                  },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -424,7 +450,12 @@ export function Creatcard() {
                 </Pressable>
               </View>
 
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:role ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: role === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -450,7 +481,12 @@ export function Creatcard() {
             </Text>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:mobile ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: mobile === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -462,7 +498,12 @@ export function Creatcard() {
                 </Pressable>
               </View>
 
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:email ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: email === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -476,7 +517,12 @@ export function Creatcard() {
             </View>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:candly ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: candly === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -502,12 +548,17 @@ export function Creatcard() {
             </Text>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:website ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: website === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
                     setopen('6');
-                    console.log("Model open")
+                    console.log('Model open');
                   }}
                 >
                   <Image source={require('../assets/website_icon.png')} />
@@ -529,7 +580,12 @@ export function Creatcard() {
             </Text>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:facebook ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: facebook === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -541,7 +597,12 @@ export function Creatcard() {
                 </Pressable>
               </View>
 
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:insta ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: insta === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -554,7 +615,12 @@ export function Creatcard() {
               </View>
             </View>
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:linkedin ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: linkedin === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -566,7 +632,12 @@ export function Creatcard() {
                 </Pressable>
               </View>
 
-              <View style={[Createcardstyle.adddetailsview,{backgroundColor:x ===""? "#E5E0D3":"white"  }]}>
+              <View
+                style={[
+                  Createcardstyle.adddetailsview,
+                  { backgroundColor: x === '' ? '#E5E0D3' : 'white' },
+                ]}
+              >
                 <Pressable
                   style={{ alignItems: 'center' }}
                   onPress={() => {
@@ -589,14 +660,15 @@ export function Creatcard() {
             />
 
             <Pressable
-              style={[Style.mainbtn,{opacity: (!name.firstname || !email) ? 0.7 : 1}]}
+              style={[
+                Style.mainbtn,
+                { opacity: !name.firstname || !email ? 0.7 : 1 },
+              ]}
               onPress={() => {
                 setStep('2');
-                naviagtion.navigate("subscription");
-  
-
+                naviagtion.navigate('subscription');
+    
               }}
-              disabled={!name.firstname || !email}
             >
               <Text style={Style.btntxt}>Next Step</Text>
             </Pressable>

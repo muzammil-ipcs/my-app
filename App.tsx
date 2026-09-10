@@ -310,7 +310,9 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
 
       if (data.code === 200) {
         await AsyncStorage.setItem('token', data.token);
+        await AsyncStorage.setItem("user_Id", data._id);
         console.log(data.token);
+        console.log(data._id);
         console.log(data.code);
         savedata();
         navigation.navigate('Dashboard');

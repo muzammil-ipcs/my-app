@@ -433,11 +433,17 @@ export const cardstyle = StyleSheet.create({
   mainview: {
     marginLeft: 70,
   },
-  title: {
+  selecttitle: {
     margin: 8,
     marginTop: 50,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  title:{
+    margin: 8,
+    marginTop: 50,
+    fontSize: 16,
+    opacity:0.60
   },
   subview: {
     margin: 10,

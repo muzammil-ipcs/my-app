@@ -54,7 +54,7 @@ export function Plans({ navigation, route }: any) {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/subscription//create-checkout-session',
+        'http://10.0.2.2:5004/api/subscription/create-checkout-session',
         {
           method: 'POST',
           headers: {
@@ -69,6 +69,9 @@ export function Plans({ navigation, route }: any) {
         },
       );
       const data = await response.json();
+      if (!response.ok || data.code !== 200 || !data.url) {
+        throw new Error(data.message ?? 'Unable to start Stripe Checkout');
+      }
       if (data.code === 200) {
         console.log('checkout session url:', data);
         await Linking.openURL(data.url);
@@ -84,7 +87,7 @@ export function Plans({ navigation, route }: any) {
       console.log(token);
 
       const response = await fetch(
-        'http://10.0.2.2:5004/api/subscription//create-checkout-session',
+        'http://10.0.2.2:5004/api/subscription/create-checkout-session',
         {
           method: 'POST',
           headers: {
@@ -99,9 +102,11 @@ export function Plans({ navigation, route }: any) {
         },
       );
 
-      const Data = await response.json();
-      console.log(Data);
-      Linking.openURL(Data.url)
+      const data = await response.json();
+      if (!response.ok || data.code !== 200 || !data.url) {
+        throw new Error(data.message ?? 'Unable to start Stripe Checkout');
+      }
+      await Linking.openURL(data.url);
       
     } catch (error) {
       console.log(error);
