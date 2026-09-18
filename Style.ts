@@ -376,7 +376,7 @@ export const cardstyle = StyleSheet.create({
     backgroundColor: '#E5E0D3',
     height: '100%',
     paddingTop: 20,
-    zIndex: 1,
+    zIndex: 20,
     overflow: 'hidden',
   },
   sideimg: {
@@ -439,11 +439,12 @@ export const cardstyle = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  title:{
+  title: {
     margin: 8,
     marginTop: 50,
     fontSize: 16,
-    opacity:0.60
+    opacity: 0.6,
+    fontWeight:"bold"
   },
   subview: {
     margin: 10,
@@ -532,18 +533,44 @@ export const cardstyle = StyleSheet.create({
     borderRadius: 20,
     width: '100%',
     marginLeft: 80,
-
   },
   paidtxttitle: {
     opacity: 0.6,
     fontSize: 14,
-    margin:4
+    margin: 4,
   },
-  paidtxt:{
-    fontSize:14,
-    padding:5,
-
-  }
+  paidtxt: {
+    fontSize: 14,
+    padding: 5,
+  },
+  iphone: {
+    width: 230,
+    height: 400,
+    alignSelf: 'center',
+  },
+  frame1: {
+    position: 'absolute',
+    width: '68%',
+    height: 280,
+    marginLeft: 53,
+    borderRadius: 20,
+    top: 2,
+    backgroundColor: 'white',
+  },
+  frame2: {
+    width: '67.2%',
+    height: 150,
+    position: 'absolute',
+    top: 245,
+    borderRadius: 20,
+    borderWidth: 0.5,
+    marginLeft: 54,
+    zIndex: 2,
+    backgroundColor: 'white',
+  },
+  getcardview: {
+    flex: 1,
+  },
 });
 
 export const Createcardstyle = StyleSheet.create({
@@ -733,6 +760,12 @@ export const Createcardstyle = StyleSheet.create({
     fontSize: 12,
     marginLeft: 10,
   },
+  doneicon: {
+    alignSelf: 'center',
+    margin: 10,
+    width: 24,
+    height: 24,
+  },
 });
 
 export const bgimage = StyleSheet.create({
@@ -779,4 +812,124 @@ export const bgimage = StyleSheet.create({
     borderRadius: 20,
     margin: 10,
   },
+});
+
+export const Qrcode_style = StyleSheet.create({
+  qrview: {
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#e5e0d3',
+    borderRadius: 20,
+    alignSelf: 'center',
+    margin: 10,
+  },
+  qr_dwld_btn: {},
+});
+
+export const analytics_style = StyleSheet.create({
+  table: {
+    width: '100%',
+    marginBottom: 30,
+  },
+
+  table_header_row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#222222',
+  },
+
+  table_body: {
+    backgroundColor:"#E5E0D3",
+    elevation:5,
+    borderRadius: 20,
+    margin: 10,
+    padding: 5,
+    
+  },
+
+  table_header_txt: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#222222',
+    textAlign: 'left',
+    paddingHorizontal: 4,
+  },
+
+  table_body_txt: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'left',
+    paddingHorizontal: 4,
+    flexWrap: 'wrap',
+  },
+
+  number_column: {
+    margin: 8,
+  },
+
+  card_column: {
+    flex: 1.3,
+    margin: 2,
+  },
+
+  source_column: {
+    margin: 8,
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'left',
+    paddingHorizontal: 4,
+  },
+
+  device_column: {
+    flex: 1.2,
+    margin: 2,
+  },
+
+  date_column: {
+    flex: 1,
+    margin: 2,
+  },
+  pagination_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    marginBottom: 5,
+  },
+
+  pagination_button: {
+    backgroundColor: '#222222',
+    paddingVertical: 9,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+
+  pagination_button_text: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  page_text: {
+    color: '#222222',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  disabled_button: {
+    backgroundColor: '#BDBDBD',
+  },
+  source_bg: {
+    backgroundColor: '#F5F2E9',
+    margin: 5,
+    borderRadius: 20,
+  },
+  body_title:{
+    fontWeight:"bold",
+    marginRight:2,
+    fontSize:13,
+    color:"#222222"
+  }
 });

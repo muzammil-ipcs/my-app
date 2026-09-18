@@ -10,7 +10,7 @@ import { Animated } from 'react-native';
 import { Restpassword } from '../api/restpassword';
 import { KeyboardAvoidingView } from 'react-native';
 import { ScrollView } from 'react-native';
-import  AsyncStorage  from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function Cardsetting() {
   const [restpass, setRestpass] = useState(false);
@@ -21,45 +21,80 @@ export function Cardsetting() {
 
   const { animationbtn, onpressin, onpressout } = Pressanimation();
 
-  const[username,setUsername]=useState<any>("")
-  const[email,setEmail]=useState<any>("")
+  const [username, setUsername] = useState<any>('');
+  const [email, setEmail] = useState<any>('');
 
-
+  const [msg, setMsg] = useState('');
+  const [updated, setUpdated] = useState(false);
 
   async function Userdetails() {
-    const Name=await AsyncStorage.getItem("username")
-    const Email=await AsyncStorage.getItem("email")
+    const Name = await AsyncStorage.getItem('username');
+    const Email = await AsyncStorage.getItem('email');
 
-    console.log("username",Name)
-    console.log("email",Email)
+    console.log('username', Name);
+    console.log('email', Email);
 
-    setUsername(Name)
-    setEmail(Email)
-
-
+    setUsername(Name);
+    setEmail(Email);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     Userdetails();
+  }, []);
 
+  async function check_password() {
+    if(currentpass === ""){
+      setMsg("Enter the current Password")
+      return;
+    }
 
-  },[])
+    if(newpass === ""){
+      setMsg("Enter the New password");
+      return;
+    }
+    
+    if (currentpass === newpass) {
+      setMsg('New password must be different from your current password');
+      return;
+    }
 
+    if (newpass.length < 8) {
+      setMsg('Password must be at least 8 characters.');
+      return;
+    }
+
+    if (!/[A-Z]/.test(newpass)) {
+      setMsg('Password must contain at least 1 uppercase letter.');
+      return;
+    }
+
+    if (newpass !== confirmpass) {
+      setMsg('Confirm password Not match  ');
+      return;
+    }
+
+    const response = await Restpassword(currentpass, newpass);
+
+    if (response.code === 200) {
+      setMsg(response.message);
+      setRestpass(false);
+      setUpdated(true);
+      return;
+    } else {
+      setMsg(response.message);
+      return;
+    }
+  }
 
   return (
-    <KeyboardAvoidingView 
-    style={{flex:1}}
-    behavior="height"
-
-    >
-      <ScrollView 
-      contentContainerStyle={{
-        flexGrow:1,
-        paddingBottom:50,
-      }}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 50,
+        }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={cardstyle.mainview}>
           <Text style={cardstyle.title}>Settings</Text>
@@ -76,12 +111,11 @@ export function Cardsetting() {
               <View style={cardstyle.icon}>
                 <Username_icon width={22} height={22} />
               </View>
-              <View style={{flex:1,}}>
-                <Text style={{ color: 'grey'}}>
-                  {' '}
-                  Username{' '}
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: 'grey' }}> Username </Text>
+                <Text style={{ flexShrink: 1, marginLeft: 10 }}>
+                  {username}
                 </Text>
-                <Text style={{flexShrink:1,marginLeft:10}}>{username}</Text>
               </View>
             </View>
             <View style={{ height: 1, backgroundColor: 'black', margin: 10 }} />
@@ -89,9 +123,9 @@ export function Cardsetting() {
               <View style={cardstyle.icon}>
                 <Email_icon width={22} height={22} />
               </View>
-              <View style={{flex:1,}}>
+              <View style={{ flex: 1 }}>
                 <Text style={{ color: 'grey', marginLeft: 10 }}> Email </Text>
-                <Text style={{flexShrink:1,marginLeft:10}}>{email}</Text>
+                <Text style={{ flexShrink: 1, marginLeft: 10 }}>{email}</Text>
               </View>
             </View>
           </View>
@@ -113,26 +147,31 @@ export function Cardsetting() {
               </View>
             </View>
 
-            <View style={cardstyle.restpass}>
-              <Pressable
-                onPress={() => {
-                  setRestpass(!restpass);
-                }}
-              >
-                {restpass ? (
-                  <Text style={cardstyle.restpasstxt}>Cancel</Text>
-                ) : (
-                  <Text style={cardstyle.restpasstxt}>Reset Password</Text>
-                )}
-              </Pressable>
-            </View>
+            {!updated && (
+              <View style={cardstyle.restpass}>
+                <Pressable
+                  onPress={() => {
+                    setRestpass(!restpass);
+                  }}
+                >
+                  {restpass ? (
+                    <Text style={cardstyle.restpasstxt}>Cancel</Text>
+                  ) : (
+                    <Text style={cardstyle.restpasstxt}>Reset Password</Text>
+                  )}
+                </Pressable>
+              </View>
+            )}
             {restpass && (
               <View>
                 <Text style={cardstyle.restinputtxt}>Current password</Text>
                 <TextInput
                   placeholder="Enter your Current password"
                   value={currentpass}
-                  onChangeText={setCurrentpass}
+                  onChangeText={text => {
+                    setCurrentpass(text);
+                    setMsg('');
+                  }}
                   style={cardstyle.restinput}
                 />
 
@@ -140,7 +179,10 @@ export function Cardsetting() {
                 <TextInput
                   placeholder="Enter new password"
                   value={newpass}
-                  onChangeText={setNewpass}
+                  onChangeText={text => {
+                    setNewpass(text);
+                    setMsg('');
+                  }}
                   style={cardstyle.restinput}
                 />
 
@@ -148,9 +190,14 @@ export function Cardsetting() {
                 <TextInput
                   placeholder="re-enter new password"
                   value={confirmpass}
-                  onChangeText={setConfirmpass}
+                  onChangeText={text => {
+                    setConfirmpass(text);
+                    setMsg('');
+                  }}
                   style={cardstyle.restinput}
                 />
+
+                <Text style={{ color: 'red', margin: 5 }}>{msg}</Text>
 
                 <Animated.View style={{ transform: [{ scale: animationbtn }] }}>
                   <Pressable
@@ -162,12 +209,25 @@ export function Cardsetting() {
                     onPressIn={onpressin}
                     onPressOut={onpressout}
                     onPress={() => {
-                      Restpassword(currentpass);
+                      check_password();
                     }}
                   >
                     <Text style={Style.btntxt}>Update Password</Text>
                   </Pressable>
                 </Animated.View>
+              </View>
+            )}
+            {updated && (
+              <View
+                style={{
+                  margin: 5,
+                  padding: 5,
+                  backgroundColor: '#F5F2E9',
+                  borderRadius: 20,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ color: '#1B7A34', fontSize: 16 }}>{msg}</Text>
               </View>
             )}
           </View>

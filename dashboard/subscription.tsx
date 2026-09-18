@@ -15,15 +15,19 @@ export function Plans({ navigation, route }: any) {
 
   const [plan1, setPlan1] = useState<any>('');
   const [plan2, setPlan2] = useState<any>('');
+  const [plan3, setPlan3] = useState<any>('');
 
   useEffect(() => {
     const status = route?.params?.status;
     if (status === 'success') {
-      navigation.replace('Dashboard');
+      navigation.replace('Createcard', {
+        status,
+        session_id: route?.params?.session_id,
+      });
     } else if (status === 'cancel') {
       navigation.setParams({ status: undefined });
     }
-  }, [route?.params?.status, navigation]);
+  }, [route?.params?.session_id, route?.params?.status, navigation]);
 
   useEffect(() => {
     async function GetPlan() {
@@ -40,15 +44,49 @@ export function Plans({ navigation, route }: any) {
           console.log('plan data', data.result);
           await setPlan1(data.result[0]._id);
           await setPlan2(data.result[1]._id);
+          await setPlan3(data.result[2]._id);
           console.log('plan1', plan1);
           console.log('plan2', plan2);
+          console.log('plan3', plan3);
         }
       } catch (error) {
         console.log('error', error);
       }
     }
     GetPlan();
-  }, [plan1, plan2]);
+  }, [plan1, plan2, plan3]);
+  async function Freeplan() {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await fetch(
+        'http://10.0.2.2:5004/api/subscription/create-checkout-session',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            planId: plan1,
+            billingCycle: yearly ? 'yearly' : 'monthly',
+            returnTo: 'create-card-mobile',
+          }),
+        },
+      );
+
+
+      const data = await response.json();
+      if (!response.ok || data.code !== 200 || !data.url) {
+        throw new Error(data.message ?? 'Unable to start Stripe Checkout');
+      }
+      if (data.code === 200) {
+        console.log('checkout session url:', data);
+        await Linking.openURL(data.url);
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+    }
+  }
 
   async function Proplan() {
     try {
@@ -62,7 +100,7 @@ export function Plans({ navigation, route }: any) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            planId: plan1,
+            planId: plan2,
             billingCycle: yearly ? 'yearly' : 'monthly',
             returnTo: 'create-card-mobile',
           }),
@@ -95,7 +133,7 @@ export function Plans({ navigation, route }: any) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            planId: plan2,
+            planId: plan3,
             billingCycle: yearly ? 'yearly' : 'monthly',
             returnTo: 'create-card-mobile',
           }),
@@ -140,7 +178,7 @@ export function Plans({ navigation, route }: any) {
             $0 <Text>{yearly ? '/Yearly' : '/Monthly'}</Text>
           </Text>
           <Text style={{ marginLeft: 30 }}>1 Bussiness Card</Text>
-          <Pressable style={stylehome.pricebtn}>
+          <Pressable style={stylehome.pricebtn} onPress={Freeplan}>
             <Text style={stylehome.btntxt}>Create for Free</Text>
           </Pressable>
         </View>

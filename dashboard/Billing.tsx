@@ -7,6 +7,18 @@ import { ScrollView } from 'react-native';
 export function Bill() {
   const [listofinvoice, setListofnvoice] = useState<any>([]);
 
+  //manage subscription and plans
+
+  const [plan,setPlan] = useState("")
+  const [maxcard,setMaxcard] = useState("")
+  const [expdate,setExpdate] = useState("")
+  const [monthly,setMonthly] = useState("")
+  const [price,setPrice] = useState("")
+  const [status , setStatus] = useState(" ")
+
+
+
+
   useEffect(() => {
     async function Invoice() {
       try {
@@ -32,8 +44,57 @@ export function Bill() {
         console.log(error);
       }
     }
+
+
+    async function subscription(){
+      try{
+        const token = await AsyncStorage.getItem("token")
+        const reponse = await fetch("http://10.0.2.2:5004/api/subscription/me",{
+          method:"GET",
+          headers:{
+            "content-Type":"application/json",
+            Authorization:` Bearer ${token}`
+          }
+        })
+
+        const data = await reponse.json();
+        if(data.code === 200){
+          console.log("subscription start")
+          setPlan(data.result.plan.name)
+          setStatus(data.result.status)  
+          setMonthly(data.result?.billingCycle)
+          setMaxcard(data.result?.plan.features.maxCards)
+          setExpdate(data.result?.currentPeriodEnd)
+          setPrice(data.result.plan.price);
+  
+          console.log("price",price)
+          console.log("plan name",plan)
+          console.log("status:",status)
+          console.log("monthly " ,monthly)
+          console.log("maxcard limit:",maxcard)
+          console.log("exp date ",expdate)
+        
+
+
+
+
+          
+
+        }
+      }catch(error){
+        console.log("something went wrong" , error)
+      }
+    }
+
+
+subscription();
     Invoice();
-  }, []);
+  }, [plan , maxcard]);
+
+  
+
+
+
 
   return (
     <View style={cardstyle.mainview}>
@@ -48,21 +109,34 @@ export function Bill() {
           <Text
             style={{
               marginLeft: 10,
-              margin: 10,
+              margin: 5,
               fontSize: 14,
               fontWeight: 'bold',
             }}
           >
-            Free
+            {plan?  plan :" Free"}
           </Text>
-          <Text style={{ fontSize: 12, marginLeft: 10 }}>
-            1 Digital Card · QR sharing · Basic template.
+          <Text style={{ fontSize: 12, marginLeft: 10,margin:5 ,fontWeight:"bold"}}>
+            {maxcard? maxcard : 1 } Digital Card 
+            . {plan === "premium" && "Wallet Passes . Custom URL {'\n'} RemoveBranding . teamManagement" }
+            {plan === "pro" && "Wallet Passes . Custom URL " }
+            {plan === "" && "Basic plan . Free tempelet"}
+            
           </Text>
-
+          <Text style={{ fontSize: 12, marginLeft: 11, opacity: 0.6 ,fontWeight:"bold"}}>
+            ${monthly === "monthly" ? (price.monthly / 100).toFixed(2) : (price.yearly / 100).toFixed(2)} USD/ {monthly}
+          </Text>
+      
           <Text
-            style={{ fontSize: 12, marginLeft: 11, margin: 2, opacity: 0.6 }}
+            style={{ fontSize: 12, marginLeft: 11, opacity: 0.6,fontWeight:"bold" }}
           >
-            Business Card Expires: Not available
+            {status? <Text>Status : {status}</Text> : <Text>Business Card Expires: Not available</Text>}
+            {" "} Ends {expdate && (<Text>{new Date(expdate).toLocaleDateString("en-GB",{
+              day: "2-digit",
+              month:"short",
+              year:"numeric"
+            })}</Text> )}
+         
           </Text>
         </View>
       </View>

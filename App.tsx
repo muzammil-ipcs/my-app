@@ -30,11 +30,23 @@ export type RootStackParamList = {
   Home: undefined;
   features: undefined;
   Dashboard: undefined;
-  Createcard: undefined;
+  Createcard:
+    | {
+        status?: 'success' | 'cancel';
+        session_id?: string;
+        isEditmode?: "edit" | "add" ;
+        Card?:any;
+      }
+    | undefined;
   'How it work': undefined;
   FAQ: undefined;
   Createbg:undefined;
-  subscription:undefined;
+  subscription:
+    | {
+        status?: 'success' | 'cancel';
+        session_id?: string;
+      }
+    | undefined;
 };
 
 type MainNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
@@ -50,6 +62,8 @@ const linking = {
     },
   },
 };
+
+export const TEMPLATE_ID_PREMIUM = "63b3c94e23c17d10871b3312";
 
 function App() {
   return (
@@ -120,6 +134,8 @@ function App() {
 async function logout({ navigation }: any) {
   try {
     await AsyncStorage.removeItem('islogin');
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("user_Id")
     navigation.navigate('Main');
   } catch {
     console.log('logout fail!');
