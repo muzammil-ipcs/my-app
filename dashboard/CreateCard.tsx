@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Modal } from 'react-native';
 import { TextInput } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import Countrypicker, {
   Country,
   CountryCode,
@@ -18,8 +19,29 @@ import Twitter from '../assets/X.svg';
 import { Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { RootStackParamList } from '../App';
+import { TEMPLATE_ID_PREMIUM } from '../App';
 
-export function Creatcard() {
+const API_BASE_URL = 'http://10.0.2.2:5004';
+
+function normalizeImageUrl(value?: string | null): string | null {
+  if (!value) {
+    return null;
+  }
+
+  if (
+    value.startsWith('http://') ||
+    value.startsWith('https://') ||
+    value.startsWith('data:')
+  ) {
+    return value;
+  }
+
+  return `${API_BASE_URL}/public/${value}`;
+}
+
+export function Creatcard( navigation :any) {
+  const route = useRoute<RouteProp<RootStackParamList, 'Createcard'>>();
   const [step, setStep] = useState<any>('1');
   const [componylogo, setComponylogo] = useState<any>();
   const [profilelogo, setProfilelogo] = useState<any>();
@@ -48,61 +70,169 @@ export function Creatcard() {
 
   const naviagtion = useNavigation<any>();
 
-  
+  const [cardreqdata, setCardreqdata] = useState('');
+  const [publishedCard, setPublishedCard] = useState<any>(null);
+  const isEditmode = route?.params?.isEditmode;
+  const editbcard = route?.params?.Card;
 
-  async function Createbcard() {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      console.log('token:', token);
-      const user_id = await AsyncStorage.getItem('user_Id');
-      console.log('user_id:', user_id); 
+  const [profilefilename, setProfilename] = useState('');
+  const [companyfilename, setCompanyfilename] = useState('');
 
-      const Carddata = {
-        user_id: user_id,
-        firstName: name.firstname,
-        lastName: name.lastname,
-        namePrefix: name.prefix,
+  useEffect(() => {
+    if (isEditmode === 'edit' && editbcard) {
+      console.log(editbcard);
+      setName({
+        prefix: editbcard.namePrefix || '',
+        firstname: editbcard.firstName || '',
+        lastname: editbcard.lastName || '',
+      });
 
-        role: role,
-        title: role,
+      setRole(editbcard.role);
+      setEmail(editbcard.email);
+      setCandly(editbcard.calendly);
+      setWebsite(editbcard.url);
+      setComponylogo(normalizeImageUrl(editbcard.comapny_logo));
+      setProfilelogo(normalizeImageUrl(editbcard.profile_photo));
+      setFacebook(editbcard.sociallink_facebook);
+      setInsta(editbcard.sociallink_instagram);
+      setLinedin(editbcard.sociallink_linkedIn);
+      setX(editbcard.sociallink_twitter);
 
-        cellPhone: `+${callcode}${mobile}`,
-        email: email,
+      const Phone = editbcard.cellPhone;
 
-        url: website,
-        calendly: candly,
-
-        sociallink_facebook: facebook,
-        sociallink_instagram: insta,
-        sociallink_linkedIn: linkedin,
-        sociallink_twitter: x,
-
-        profile_photo: profilelogo,
-        comapny_logo: componylogo,
-      };
-      console.log("Detailsfilled",Carddata)
-      console.log("Adding data.....")
-
-      const response = await fetch(
-        'http://10.0.2.2:5004/api/businesscard/createBcard',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(Carddata),
-        },
-      );
-
-      const Data = await response.json();
-      console.log("Full api response",Data);
-    } catch(error){
-      console.log('something went wrong ', error);
+      if (Phone.startsWith('+1')) {
+        setCallcode('1');
+        setMobile(Phone.substring(2));
+      } else {
+        setMobile(Phone);
+      }
     }
+  }, [editbcard, isEditmode]);
+
+  async function Draft_data() {
+    const user_id = await AsyncStorage.getItem('user_Id');
+    console.log('user_id', user_id);
+    const card_data = {
+      user: user_id,
+      firstName: name.firstname,
+      lastName: name.lastname,
+      namePrefix: name.prefix,
+      role: role,
+      title: role,
+      cellPhone: `+${callcode}${mobile}`,
+      email: email,
+      url: website,
+      calendly: candly,
+      sociallink_facebook: facebook,
+      sociallink_instagram: insta,
+      sociallink_linkedIn: linkedin,
+      sociallink_twitter: x,
+      profile_photo: profilefilename,
+      comapny_logo: companyfilename,
+      template_id: TEMPLATE_ID_PREMIUM,
+    };
+
+    await AsyncStorage.setItem('card_drafter', JSON.stringify(card_data));
+    console.log('card data', card_data);
+    naviagtion.navigate('subscription');
   }
 
-  
+  useEffect(() => {
+    async function confirmpayment() {
+      const status = route?.params?.status;
+      const sessionId = route?.params?.session_id;
+
+      if (status !== 'success' || !sessionId) {
+        console.log('payment not complete');
+        return;
+      }
+
+      try {
+        const token = await AsyncStorage.getItem('token');
+
+        console.log(token);
+        await AsyncStorage.setItem('stripe_session_id', sessionId);
+        const save_draft = await AsyncStorage.getItem('card_drafter');
+
+        if (!save_draft) {
+          console.log('data not save', save_draft);
+          return;
+        }
+
+        const draft = JSON.parse(save_draft);
+        console.log('user card data: ', draft);
+
+        const response = await fetch(
+          'http://10.0.2.2:5004/api/subscription/confirm-checkout-session',
+          {
+            method: 'POST',
+
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              sessionId: sessionId,
+            }),
+          },
+        );
+        const data = await response.json();
+        console.log('confirm checkout resuly', data);
+        if (data.code === 200 || data.result?.status === 'Active') {
+          console.log('payment conformation successfull');
+          const card_data = {
+            user: draft.user,
+            firstName: draft.firstName,
+            lastName: draft.lastName ?? draft.lastname,
+            namePrefix: draft.namePrefix,
+            role: draft.role,
+            title: draft.role,
+
+            cellPhone: draft.cellPhone,
+            email: draft.email,
+
+            url: draft.url,
+            calendly: draft.candly,
+
+            sociallink_facebook: draft.sociallink_facebook,
+            sociallink_instagram: draft.sociallink_instagram,
+            sociallink_linkedIn: draft.sociallink_linkedIn,
+            sociallink_twitter: draft.sociallink_twitter,
+
+            profile_photo: draft.profile_photo,
+            comapny_logo: draft.comapny_logo,
+            template_id: draft.template_id || TEMPLATE_ID_PREMIUM,
+          };
+
+          const cardResponse = await fetch(
+            'http://10.0.2.2:5004/api/businesscard/addbusinesscard',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(card_data),
+            },
+          );
+
+          const Data = await cardResponse.json();
+          console.log('response of add business card', Data);
+          if (cardResponse.ok && Data.result) {
+            const publishedCardData = { ...draft, ...Data.result };
+            console.log('published card data:', publishedCardData);
+            setPublishedCard(publishedCardData);
+            setStep('3');
+            await AsyncStorage.removeItem('card_drafter');
+          }
+          console.log('check userdata:', card_data);
+        }
+      } catch (error) {
+        console.log('Error confirming payment:', error);
+      }
+    }
+    confirmpayment();
+  }, [route?.params?.session_id, route?.params?.status]);
 
   function Checkinput() {
     if (open === '1') {
@@ -136,53 +266,156 @@ export function Creatcard() {
     (x !== '' ? 1 : 0);
 
   useEffect(() => {
-    if (scroll === 3) {
-      Animated.timing(scrollX, {
-        toValue: -30,
-        duration: 2000,
-        useNativeDriver: true,
-      }).start();
-    } else if (scroll > 3) {
-      Animated.timing(scrollX, {
-        toValue: -70,
-        duration: 2000,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      scrollX.setValue(0);
-    }
-  });
+  if (scroll === 3) {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scrollX, {
+          toValue: -70,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
 
-  function Addimages(Type: string) {
+        Animated.timing(scrollX, {
+          toValue: 0,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  } else {
+    scrollX.stopAnimation();
+    scrollX.setValue(0);
+  }
+
+  return () => {
+    scrollX.stopAnimation();
+  };
+}, [scroll]);
+
+  async function uploadImage(assest: any, endpoint: string): Promise<string> {
+    const formData = new FormData();
+
+    formData.append('file', {
+      uri: assest.uri,
+      name: assest.fileName || 'image.jpg',
+      type: assest.type || 'image/jpeg',
+    } as any);
+    console.log("upload Image")
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+    console.log(data)
+
+    if (!response.ok || !data.result) {
+      throw new Error(data.message || 'image upload failed');
+    }
+
+    return data.result;
+  }
+
+  function Addimages(type: 'company' | 'profile') {
     console.log('call lunchimagelabrary');
     launchImageLibrary(
       {
         mediaType: 'photo',
         selectionLimit: 1,
       },
-      Response => {
-        if (Response.assets) {
-          const Imageuri = Response.assets[0].uri;
-          console.log(Imageuri);
-
-          if (Type === 'company') {
-            setComponylogo(Imageuri);
+      async response => {
+        if (response.assets) {
+          const asset = response.assets?.[0];
+          console.log(asset);
+          if (!asset?.uri) {
+            console.log("no uri of image",asset.uri)
+            return;
           }
-          if (Type === 'profile') {
-            setProfilelogo(Imageuri);
+
+          try {
+            if (type === 'company') {
+              const filename = await uploadImage(asset, '/api/home/addimage');
+              
+
+              setCompanyfilename(filename);
+              setComponylogo(normalizeImageUrl(filename));
+            }
+
+            if (type === 'profile') {
+              const filename = await uploadImage(
+                asset,
+                '/api/home/addprofileimage',
+              );
+
+              setProfilename(filename);
+              setProfilelogo(normalizeImageUrl(filename));
+            }
+          } catch (error) {
+            console.log('image upload faild:', error);
           }
         }
       },
     );
   }
 
+  async function Update_card() {
+    try {
+      const user_id = await AsyncStorage.getItem('user_Id');
+      console.log('usert Id ', user_id);
+      const token = await AsyncStorage.getItem('token');
+      const bcard_id = await AsyncStorage.getItem('bcard_id');
+      console.log('business card id', bcard_id);
+
+      const nextProfilePhoto = profilefilename || editbcard?.profile_photo || '';
+      const nextCompanyLogo = companyfilename || editbcard?.comapny_logo || '';
+
+      const response = await fetch(
+        `http://10.0.2.2:5004/api/businesscard/editBusinesscarddata?id=${bcard_id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            user: user_id,
+            firstName: name.firstname,
+            lastName: name.lastname,
+            namePrefix: name.prefix,
+            role: role,
+            title: role,
+            cellPhone: `+${callcode}${mobile}`,
+            email: email,
+            url: website,
+            calendly: candly,
+            sociallink_facebook: facebook,
+            sociallink_instagram: insta,
+            sociallink_linkedIn: linkedin,
+            sociallink_twitter: x,
+            profile_photo: nextProfilePhoto,
+            comapny_logo: nextCompanyLogo,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.code === 200) {
+        naviagtion.replace('Dashboard');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F5F2E9' }}>
       <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
         <View style={[Createcardstyle.frame1, { pointerEvents: 'none' }]}>
-          {componylogo ? (
+          {componylogo || publishedCard ? (
             <Image
-              source={{ uri: componylogo }}
+              source={{ uri: componylogo || publishedCard.comapny_logo}}
               style={Createcardstyle.companylogo}
               resizeMode="contain"
             />
@@ -192,6 +425,7 @@ export function Creatcard() {
               style={Createcardstyle.companylogo}
             />
           )}
+
           {profilelogo ? (
             <Image
               source={{ uri: profilelogo }}
@@ -206,16 +440,35 @@ export function Creatcard() {
           )}
         </View>
         <View style={Createcardstyle.frame2}>
-          <Text style={Createcardstyle.name}>
-            {name.prefix || name.firstname || name.lastname
-              ? (name.prefix ? name.prefix + '.' : '') +
-                name.firstname +
-                ' ' +
-                name.lastname
-              : 'JHON'}
-          </Text>
+          {isEditmode === 'edit' ? (
+            <Text style={Createcardstyle.name}>
+              {name.prefix || name.firstname || name.lastname
+                ? (name.prefix ? name.prefix + '.' : '') +
+                  name.firstname +
+                  ' ' +
+                  name.lastname
+                : (editbcard.namePrefix ? editbcard.namePrefix + '.' : '') +
+                  editbcard.firstName +
+                  ' ' +
+                  editbcard.lastName}
+            </Text>
+          ) : (
+            <Text style={Createcardstyle.name}>
+              {name.prefix || name.firstname || name.lastname
+                ? (name.prefix ? name.prefix + '.' : '') +
+                  name.firstname +
+                  ' ' +
+                  name.lastname
+                : 'JHON'}
+            </Text>
+          )}
           <Text style={Createcardstyle.role}>
-            {role || 'Co-Founder & Creative Director'}
+            {isEditmode === 'edit'
+              ? role
+                ? role
+                : editbcard.role
+
+              : publishedCard ?  publishedCard?.role : role  || 'Co-Founder & Creative Director'}
           </Text>
           <View style={Createcardstyle.userinput}>
             <Image
@@ -223,7 +476,9 @@ export function Creatcard() {
               style={Createcardstyle.callicon}
             />
             <Text style={Createcardstyle.call}>
-              {mobile ? fullnnumber : '+1 1234567890'}
+              {isEditmode === 'edit'
+                ? fullnnumber || editbcard?.cellPhone || '+1 1234567890'
+                : fullnnumber.length<2 ? fullnnumber :'+1 1234567890'}
             </Text>
           </View>
           <View style={Createcardstyle.userinput}>
@@ -232,7 +487,11 @@ export function Creatcard() {
               style={Createcardstyle.callicon}
             />
             <Text style={Createcardstyle.call}>
-              {email || 'demo@gmail.com'}
+              {isEditmode === 'edit'
+                ? email
+                  ? email
+                  : editbcard?.email
+                : email || 'demo@gmail.com'}
             </Text>
           </View>
 
@@ -244,7 +503,7 @@ export function Creatcard() {
             }}
           >
             <Pressable style={[Createcardstyle.savecontact, { flex: 1 }]}>
-              <Text style={Createcardstyle.btntxt}>Save Contack</Text>
+              <Text style={Createcardstyle.btntxt}>Save Contacts</Text>
             </Pressable>
 
             <View
@@ -320,361 +579,447 @@ export function Creatcard() {
           style={Createcardstyle.iphone}
           resizeMode="stretch"
         />
-
-        <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-          <View
-            style={
-              step === '1' ? Createcardstyle.selectsteps : Createcardstyle.steps
-            }
-          >
-            <Text
-              style={{ margin: 5, color: step === '1' ? 'white' : 'black' }}
+        {isEditmode === 'add' && (
+          <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+            <View
+              style={
+                step === '1'
+                  ? Createcardstyle.selectsteps
+                  : Createcardstyle.steps
+              }
             >
-              1
-            </Text>
-          </View>
-
-          <View
-            style={
-              step === '2' ? Createcardstyle.selectsteps : Createcardstyle.steps
-            }
-          >
-            <Text
-              style={{ margin: 5, color: step === '2' ? 'white' : 'black' }}
-            >
-              2
-            </Text>
-          </View>
-
-          <View
-            style={
-              step === '3' ? Createcardstyle.selectsteps : Createcardstyle.steps
-            }
-          >
-            <Text
-              style={{ margin: 5, color: step === '3' ? 'white' : 'black' }}
-            >
-              3
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ flex: 1, padding: 20 }}>
-        <ScrollView>
-          <Text style={Createcardstyle.customcardtxt}>
-            Create your first card
-          </Text>
-          <Text style={cardstyle.minitxt}>
-            Ready to design your card? Pick a field below to get started!
-          </Text>
-
-          <View style={Createcardstyle.customcardview}>
-            <Text style={{ margin: 10, fontWeight: 'bold' }}>Add Images</Text>
-
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <Pressable
-                onPress={() => {
-                  Addimages('company');
-                }}
+              <Text
+                style={{ margin: 5, color: step === '1' ? 'white' : 'black' }}
               >
-                <View style={Createcardstyle.addimageview}>
-                  {componylogo ? (
-                    <Image
-                      source={{ uri: componylogo }}
-                      style={Createcardstyle.gallaryimg}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Image source={require('../assets/add_image_icon.png')} />
-                  )}
-                  <Text>Company Logo</Text>
-                </View>
-              </Pressable>
-
-              <Pressable
-                onPress={() => {
-                  Addimages('profile');
-                }}
-                style={{ alignItems: 'center' }}
-              >
-                <View style={Createcardstyle.addimageview}>
-                  {profilelogo ? (
-                    <Image
-                      source={{ uri: profilelogo }}
-                      style={Createcardstyle.gallaryimg}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Image source={require('../assets/add_image_icon.png')} />
-                  )}
-                  <Text>Profile Image</Text>
-                </View>
-              </Pressable>
-            </View>
-
-            <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
-              Add your Details
-            </Text>
-
-            <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
-              PERSIONAL DETAILS{' '}
-              <View
-                style={{
-                  borderColor: 'black',
-                  borderWidth: 0.9,
-                  opacity: 0.95,
-                  width: '100%',
-                }}
-              />
-            </Text>
-
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  {
-                    backgroundColor:
-                      name.firstname.trim() === '' ? '#E5E0D3' : 'white',
-                  },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('1');
-                  }}
-                >
-                  <Image source={require('../assets/user_icon.png')} />
-                  <Text>Name</Text>
-                </Pressable>
-              </View>
-
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: role === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('2');
-                  }}
-                >
-                  <Image source={require('../assets/role_icon.png')} />
-                  <Text>Role</Text>
-                </Pressable>
-              </View>
-            </View>
-
-            <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
-              CONTACT DETAILS{' '}
-              <View
-                style={{
-                  borderColor: 'black',
-                  borderWidth: 0.9,
-                  opacity: 0.95,
-                  width: '100%',
-                }}
-              />
-            </Text>
-
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: mobile === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('3');
-                  }}
-                >
-                  <Image source={require('../assets/phone_icon.png')} />
-                  <Text>Mobile</Text>
-                </Pressable>
-              </View>
-
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: email === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('4');
-                  }}
-                >
-                  <Image source={require('../assets/email_icon.png')} />
-                  <Text>Email</Text>
-                </Pressable>
-              </View>
-            </View>
-
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: candly === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('5');
-                  }}
-                >
-                  <Image source={require('../assets/calender_icon.png')} />
-                  <Text>Calendly</Text>
-                </Pressable>
-              </View>
-            </View>
-
-            <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
-              WEBSITE
-              <View
-                style={{
-                  borderColor: 'black',
-                  borderWidth: 0.9,
-                  opacity: 0.95,
-                  width: '100%',
-                }}
-              />
-            </Text>
-
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: website === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('6');
-                    console.log('Model open');
-                  }}
-                >
-                  <Image source={require('../assets/website_icon.png')} />
-                  <Text>Website</Text>
-                </Pressable>
-              </View>
-            </View>
-
-            <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
-              SOCIAL MEDIA LINKS{' '}
-              <View
-                style={{
-                  borderColor: 'black',
-                  borderWidth: 0.9,
-                  opacity: 0.95,
-                  width: '100%',
-                }}
-              />
-            </Text>
-
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: facebook === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('7');
-                  }}
-                >
-                  <Image source={require('../assets/facebook_icon.png')} />
-                  <Text>Facebook</Text>
-                </Pressable>
-              </View>
-
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: insta === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('8');
-                  }}
-                >
-                  <Image source={require('../assets/instagram_icon.png')} />
-                  <Text>Instagram</Text>
-                </Pressable>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: linkedin === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('9');
-                  }}
-                >
-                  <Image source={require('../assets/linkedin_icon.png')} />
-                  <Text>LinkedIn</Text>
-                </Pressable>
-              </View>
-
-              <View
-                style={[
-                  Createcardstyle.adddetailsview,
-                  { backgroundColor: x === '' ? '#E5E0D3' : 'white' },
-                ]}
-              >
-                <Pressable
-                  style={{ alignItems: 'center' }}
-                  onPress={() => {
-                    setopen('10');
-                  }}
-                >
-                  <Image source={require('../assets/x_icon.png')} />
-                  <Text>Twetter/X</Text>
-                </Pressable>
-              </View>
+                1
+              </Text>
             </View>
 
             <View
-              style={{
-                borderColor: 'black',
-                borderWidth: 1,
-                margin: 20,
-                opacity: 0.5,
-              }}
-            />
-
-            <Pressable
-              style={[
-                Style.mainbtn,
-                { opacity: !name.firstname || !email ? 0.7 : 1 },
-              ]}
-              onPress={() => {
-                setStep('2');
-                naviagtion.navigate('subscription');
-    
-              }}
+              style={
+                step === '2'
+                  ? Createcardstyle.selectsteps
+                  : Createcardstyle.steps
+              }
             >
-              <Text style={Style.btntxt}>Next Step</Text>
-            </Pressable>
+              <Text
+                style={{ margin: 5, color: step === '2' ? 'white' : 'black' }}
+              >
+                2
+              </Text>
+            </View>
+
+            <View
+              style={
+                step === '3'
+                  ? Createcardstyle.selectsteps
+                  : Createcardstyle.steps
+              }
+            >
+              <Text
+                style={{ margin: 5, color: step === '3' ? 'white' : 'black' }}
+              >
+                3
+              </Text>
+            </View>
           </View>
-        </ScrollView>
+        )}
       </View>
+
+      {(step === '1' || step === '2') && (
+        <View style={{ flex: 1, padding: 20 }}>
+          <ScrollView>
+            <Text style={Createcardstyle.customcardtxt}>
+              {isEditmode === 'edit'
+                ? 'Edit your card '
+                : ' Create your first card'}
+            </Text>
+            <Text style={cardstyle.minitxt}>
+              {isEditmode === 'edit'
+                ? 'Update the fields below, then click Save changes.'
+                : 'Ready to design your card? Pick a field below to get started!'}
+            </Text>
+
+            <View style={Createcardstyle.customcardview}>
+              <Text style={{ margin: 10, fontWeight: 'bold' }}>Add Images</Text>
+
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <Pressable
+                  onPress={() => {
+                    Addimages('company');
+                  }}
+                >
+                  <View style={Createcardstyle.addimageview}>
+                    {componylogo ? (
+                      <Image
+                        source={{ uri: componylogo }}
+                        style={Createcardstyle.gallaryimg}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Image source={require('../assets/add_image_icon.png')} />
+                    )}
+                    <Text>Company Logo</Text>
+                  </View>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => {
+                    Addimages('profile');
+                  }}
+                  style={{ alignItems: 'center' }}
+                >
+                  <View style={Createcardstyle.addimageview}>
+                    {profilelogo ? (
+                      <Image
+                        source={{ uri: profilelogo }}
+                        style={Createcardstyle.gallaryimg}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Image source={require('../assets/add_image_icon.png')} />
+                    )}
+                    <Text>Profile Image</Text>
+                  </View>
+                </Pressable>
+              </View>
+
+              <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
+                Add your Details
+              </Text>
+
+              <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
+                PERSIONAL DETAILS{' '}
+                <View
+                  style={{
+                    borderColor: 'black',
+                    borderWidth: 0.9,
+                    opacity: 0.95,
+                    width: '100%',
+                  }}
+                />
+              </Text>
+
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    {
+                      backgroundColor:
+                        name.firstname.trim() === '' ? '#E5E0D3' : 'white',
+                    },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('1');
+                      setCardreqdata('');
+                    }}
+                  >
+                    <Image source={require('../assets/user_icon.png')} />
+                    <Text>Name</Text>
+                  </Pressable>
+                </View>
+
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: role === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('2');
+                    }}
+                  >
+                    <Image source={require('../assets/role_icon.png')} />
+                    <Text>Role</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
+                CONTACT DETAILS{' '}
+                <View
+                  style={{
+                    borderColor: 'black',
+                    borderWidth: 0.9,
+                    opacity: 0.95,
+                    width: '100%',
+                  }}
+                />
+              </Text>
+
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: mobile === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('3');
+                    }}
+                  >
+                    <Image source={require('../assets/phone_icon.png')} />
+                    <Text>Mobile</Text>
+                  </Pressable>
+                </View>
+
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: email === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('4');
+                      setCardreqdata('');
+                    }}
+                  >
+                    <Image source={require('../assets/email_icon.png')} />
+                    <Text>Email</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    {
+                      backgroundColor:
+                        (candly || editbcard?.calendly || '').trim() === ''
+                          ? '#E5E0D3'
+                          : 'white',
+                    },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('5');
+                    }}
+                  >
+                    <Image source={require('../assets/calender_icon.png')} />
+                    <Text>Calendly</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
+                WEBSITE
+                <View
+                  style={{
+                    borderColor: 'black',
+                    borderWidth: 0.9,
+                    opacity: 0.95,
+                    width: '100%',
+                  }}
+                />
+              </Text>
+
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    {
+                      backgroundColor:
+                        (website || editbcard?.website || '').trim() === ''
+                          ? '#E5E0D3'
+                          : 'white',
+                    },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('6');
+                      console.log('Model open');
+                    }}
+                  >
+                    <Image source={require('../assets/website_icon.png')} />
+                    <Text>Website</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <Text style={{ marginLeft: 20, margin: 5, fontWeight: 500 }}>
+                SOCIAL MEDIA LINKS{' '}
+                <View
+                  style={{
+                    borderColor: 'black',
+                    borderWidth: 0.9,
+                    opacity: 0.95,
+                    width: '100%',
+                  }}
+                />
+              </Text>
+
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: facebook === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('7');
+                    }}
+                  >
+                    <Image source={require('../assets/facebook_icon.png')} />
+                    <Text>Facebook</Text>
+                  </Pressable>
+                </View>
+
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: insta === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('8');
+                    }}
+                  >
+                    <Image source={require('../assets/instagram_icon.png')} />
+                    <Text>Instagram</Text>
+                  </Pressable>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: linkedin === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('9');
+                    }}
+                  >
+                    <Image source={require('../assets/linkedin_icon.png')} />
+                    <Text>LinkedIn</Text>
+                  </Pressable>
+                </View>
+
+                <View
+                  style={[
+                    Createcardstyle.adddetailsview,
+                    { backgroundColor: x === '' ? '#E5E0D3' : 'white' },
+                  ]}
+                >
+                  <Pressable
+                    style={{ alignItems: 'center' }}
+                    onPress={() => {
+                      setopen('10');
+                    }}
+                  >
+                    <Image source={require('../assets/x_icon.png')} />
+                    <Text>Twetter/X</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  borderColor: 'black',
+                  borderWidth: 1,
+                  margin: 20,
+                  opacity: 0.5,
+                }}
+              />
+              {cardreqdata && (
+                <Text style={{ alignSelf: 'center', color: '#FE3D12' }}>
+                  {cardreqdata}
+                </Text>
+              )}
+
+              <Pressable
+                style={Style.mainbtn}
+                onPress={() => {
+                  if (isEditmode === 'edit') {
+                    Update_card();
+                    return;
+                  }
+
+                  if (!name.firstname || !email) {
+                    setCardreqdata('Name & Email is required!');
+                    return;
+                  }
+                  setStep('2');
+                  Draft_data();
+                  setCardreqdata('');
+                }}
+              >
+                <Text style={Style.btntxt}>
+                  {isEditmode === 'edit' ? 'Save Chanages' : 'Next Step'}
+                </Text>
+              </Pressable>
+            </View>
+          </ScrollView>
+        </View>
+      )}
+
+      {step === '3' && publishedCard && (
+        <View
+          style={[{ flex: 1, padding: 20 }, Createcardstyle.customcardview]}
+        >
+          <View
+            style={{
+              backgroundColor: 'white',
+              borderRadius: 20,
+              padding: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+            }}
+          >
+            <View style={{ alignItems: 'center' }}>
+              <View style={{ backgroundColor: '#FE3D12', borderRadius: 50 }}>
+                <Image
+                  source={require('../assets/done.png')}
+                  style={Createcardstyle.doneicon}
+                />
+              </View>
+              <Text style={{ fontSize: 24 }}>Card Published!</Text>
+              <Text
+                style={{
+                  color: 'gray',
+                  textAlign: 'center',
+                  margin: 10,
+                  fontSize: 12,
+                }}
+              >
+                Thank you for creating your business card.{'\n'}
+                Your business card has been created successfully.
+              </Text>
+              <Pressable
+                style={cardstyle.mainbtn}
+                onPress={() => {
+                  naviagtion.replace('Dashboard');
+                }}
+              >
+                <Text style={Createcardstyle.btntxt}>View Card</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* user input Modals */}
 
       <Modal visible={open === '1'} transparent={true} animationType="fade">
         <View style={Createcardstyle.modelview}>
