@@ -9,15 +9,12 @@ export function Bill() {
 
   //manage subscription and plans
 
-  const [plan,setPlan] = useState("")
-  const [maxcard,setMaxcard] = useState("")
-  const [expdate,setExpdate] = useState("")
-  const [monthly,setMonthly] = useState("")
-  const [price,setPrice] = useState("")
-  const [status , setStatus] = useState(" ")
-
-
-
+  const [plan, setPlan] = useState('');
+  const [maxcard, setMaxcard] = useState('');
+  const [expdate, setExpdate] = useState('');
+  const [monthly, setMonthly] = useState('');
+  const [price, setPrice] = useState<any>(null);
+  const [status, setStatus] = useState(' ');
 
   useEffect(() => {
     async function Invoice() {
@@ -45,56 +42,45 @@ export function Bill() {
       }
     }
 
-
-    async function subscription(){
-      try{
-        const token = await AsyncStorage.getItem("token")
-        const reponse = await fetch("http://10.0.2.2:5004/api/subscription/me",{
-          method:"GET",
-          headers:{
-            "content-Type":"application/json",
-            Authorization:` Bearer ${token}`
-          }
-        })
+    async function subscription() {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const reponse = await fetch(
+          'http://10.0.2.2:5004/api/subscription/me',
+          {
+            method: 'GET',
+            headers: {
+              'content-Type': 'application/json',
+              Authorization: ` Bearer ${token}`,
+            },
+          },
+        );
 
         const data = await reponse.json();
-        if(data.code === 200){
-          console.log("subscription start")
-          setPlan(data.result.plan.name)
-          setStatus(data.result.status)  
-          setMonthly(data.result?.billingCycle)
-          setMaxcard(data.result?.plan.features.maxCards)
-          setExpdate(data.result?.currentPeriodEnd)
+        if (data.code === 200) {
+          console.log('subscription start');
+          setPlan(data.result.plan.name);
+          setStatus(data.result.status);
+          setMonthly(data.result?.billingCycle);
+          setMaxcard(data.result?.plan.features.maxCards);
+          setExpdate(data.result?.currentPeriodEnd);
           setPrice(data.result.plan.price);
-  
-          console.log("price",price)
-          console.log("plan name",plan)
-          console.log("status:",status)
-          console.log("monthly " ,monthly)
-          console.log("maxcard limit:",maxcard)
-          console.log("exp date ",expdate)
-        
 
-
-
-
-          
-
+          console.log('price', price);
+          console.log('plan name', plan);
+          console.log('status:', status);
+          console.log('monthly ', monthly);
+          console.log('maxcard limit:', maxcard);
+          console.log('exp date ', expdate);
         }
-      }catch(error){
-        console.log("something went wrong" , error)
+      } catch (error) {
+        console.log('something went wrong', error);
       }
     }
 
-
-subscription();
+    subscription();
     Invoice();
-  }, [plan , maxcard]);
-
-  
-
-
-
+  }, [plan, maxcard]);
 
   return (
     <View style={cardstyle.mainview}>
@@ -114,29 +100,62 @@ subscription();
               fontWeight: 'bold',
             }}
           >
-            {plan?  plan :" Free"}
+            {plan ? plan : ' Free'}
           </Text>
-          <Text style={{ fontSize: 12, marginLeft: 10,margin:5 ,fontWeight:"bold"}}>
-            {maxcard? maxcard : 1 } Digital Card 
-            . {plan === "premium" && "Wallet Passes . Custom URL {'\n'} RemoveBranding . teamManagement" }
-            {plan === "pro" && "Wallet Passes . Custom URL " }
-            {plan === "" && "Basic plan . Free tempelet"}
-            
-          </Text>
-          <Text style={{ fontSize: 12, marginLeft: 11, opacity: 0.6 ,fontWeight:"bold"}}>
-            ${monthly === "monthly" ? (price.monthly / 100).toFixed(2) : (price.yearly / 100).toFixed(2)} USD/ {monthly}
-          </Text>
-      
           <Text
-            style={{ fontSize: 12, marginLeft: 11, opacity: 0.6,fontWeight:"bold" }}
+            style={{
+              fontSize: 12,
+              marginLeft: 10,
+              margin: 5,
+              fontWeight: 'bold',
+            }}
           >
-            {status? <Text>Status : {status}</Text> : <Text>Business Card Expires: Not available</Text>}
-            {" "} Ends {expdate && (<Text>{new Date(expdate).toLocaleDateString("en-GB",{
-              day: "2-digit",
-              month:"short",
-              year:"numeric"
-            })}</Text> )}
-         
+            {maxcard ? maxcard : 1} Digital Card .{' '}
+            {plan === 'premium' &&
+              "Wallet Passes . Custom URL {'\n'} RemoveBranding . teamManagement"}
+            {plan === 'pro' && 'Wallet Passes . Custom URL '}
+            {plan === 'Free' && 'Basic plan . Free tempelet'}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginLeft: 11,
+              opacity: 0.6,
+              fontWeight: 'bold',
+            }}
+          >
+            $
+            {price
+              ? monthly === 'monthly'
+                ? (price.monthly / 100).toFixed(2)
+                : (price.yearly / 100).toFixed(2)
+              : '0.00'}{' '}
+            USD/ {monthly}
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 12,
+              marginLeft: 11,
+              opacity: 0.6,
+              fontWeight: 'bold',
+            }}
+          >
+            {status ? (
+              <Text>Status : {status}</Text>
+            ) : (
+              <Text>Business Card Expires: Not available</Text>
+            )}{' '}
+            Ends{' '}
+            {expdate && (
+              <Text>
+                {new Date(expdate).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </Text>
+            )}
           </Text>
         </View>
       </View>
