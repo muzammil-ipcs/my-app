@@ -4,9 +4,6 @@ import {
   Pressable,
   TextInput,
   Modal,
-  Animated,
-  Easing,
-  ScrollView,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,7 +12,7 @@ import { Image } from 'react-native';
 
 // import { LinearGradient } from "react-native-linear-gradient",
 // import { Linking } from 'react-native';
-import { cardstyle, Style, stylehome } from './Style';
+import { cardstyle, Style, } from './Style';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dashboard } from './dashboard/dashboard';
@@ -85,19 +82,19 @@ function App() {
           }}
         />
 
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Home"
           component={Home}
           options={{
             headerShown: false,
           }}
-        />
+        /> */}
 
-        <Stack.Screen name="features" component={Features} />
+        {/* <Stack.Screen name="features" component={Features} />
 
         <Stack.Screen name="How it work" component={Howitwork} />
 
-        <Stack.Screen name="FAQ" component={Frequntly} />
+        <Stack.Screen name="FAQ" component={Frequntly} /> */}
 
         <Stack.Screen
           name="Dashboard"
@@ -131,16 +128,16 @@ function App() {
   );
 }
 
-async function logout({ navigation }: any) {
-  try {
-    await AsyncStorage.removeItem('islogin');
-    await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("user_Id")
-    navigation.navigate('Main');
-  } catch {
-    console.log('logout fail!');
-  }
-}
+// async function logout({ navigation }: any) {
+//   try {
+//     await AsyncStorage.removeItem('islogin');
+//     await AsyncStorage.removeItem("token");
+//     await AsyncStorage.removeItem("user_Id")
+//     navigation.navigate('Main');
+//   } catch {
+//     console.log('logout fail!');
+//   }
+// }
 
 function Splashscreen({ navigation }: any) {
   useEffect(() => {
@@ -749,587 +746,587 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
   );
 }
 
-function Faq() {
-  const [openfaq, setOpenfaq] = useState<any>(0);
+// function Faq() {
+//   const [openfaq, setOpenfaq] = useState<any>(0);
 
-  return (
-    <View>
-      <View style={[stylehome.Faqvew, openfaq === 0 && stylehome.Faqvew2]}>
-        <Pressable
-          onPress={() => {
-            if (openfaq === 0) {
-              setOpenfaq(null);
-            } else {
-              setOpenfaq(0);
-            }
-          }}
-          style={{ flexDirection: 'row' }}
-        >
-          <Text
-            style={{
-              marginLeft: 10,
-              fontWeight: 'bold',
-              alignSelf: 'flex-start',
-            }}
-          >
-            What are the benefits of a digital business card?
-          </Text>
-          <Text>{openfaq === 0 ? '⌃' : '⌄'}</Text>
-        </Pressable>
+//   return (
+//     <View>
+//       <View style={[stylehome.Faqvew, openfaq === 0 && stylehome.Faqvew2]}>
+//         <Pressable
+//           onPress={() => {
+//             if (openfaq === 0) {
+//               setOpenfaq(null);
+//             } else {
+//               setOpenfaq(0);
+//             }
+//           }}
+//           style={{ flexDirection: 'row' }}
+//         >
+//           <Text
+//             style={{
+//               marginLeft: 10,
+//               fontWeight: 'bold',
+//               alignSelf: 'flex-start',
+//             }}
+//           >
+//             What are the benefits of a digital business card?
+//           </Text>
+//           <Text>{openfaq === 0 ? '⌃' : '⌄'}</Text>
+//         </Pressable>
 
-        {openfaq === 0 && (
-          <Text style={{ margin: 20 }}>
-            It's never out of date, because you're the one editing it, not a
-            print shop. It travels better than a paper card ever could: over
-            text, QR code, wallet, whatever the other person prefers. And
-            nobody's typing your number into their phone by hand; they just save
-            it straight from the scan.
-          </Text>
-        )}
-      </View>
-      <View style={[stylehome.Faqvew, openfaq === 1 && stylehome.Faqvew2]}>
-        <Pressable
-          onPress={() => {
-            if (openfaq === 1) {
-              setOpenfaq(null);
-            } else {
-              setOpenfaq(1);
-            }
-          }}
-          style={{ flexDirection: 'row' }}
-        >
-          <Text
-            style={{
-              marginLeft: 10,
-              fontWeight: 'bold',
-              alignSelf: 'flex-start',
-            }}
-          >
-            What is the top-rated QR code business card app?
-          </Text>
-          <Text>{openfaq === 1 ? '⌃' : '⌄'}</Text>
-        </Pressable>
+//         {openfaq === 0 && (
+//           <Text style={{ margin: 20 }}>
+//             It's never out of date, because you're the one editing it, not a
+//             print shop. It travels better than a paper card ever could: over
+//             text, QR code, wallet, whatever the other person prefers. And
+//             nobody's typing your number into their phone by hand; they just save
+//             it straight from the scan.
+//           </Text>
+//         )}
+//       </View>
+//       <View style={[stylehome.Faqvew, openfaq === 1 && stylehome.Faqvew2]}>
+//         <Pressable
+//           onPress={() => {
+//             if (openfaq === 1) {
+//               setOpenfaq(null);
+//             } else {
+//               setOpenfaq(1);
+//             }
+//           }}
+//           style={{ flexDirection: 'row' }}
+//         >
+//           <Text
+//             style={{
+//               marginLeft: 10,
+//               fontWeight: 'bold',
+//               alignSelf: 'flex-start',
+//             }}
+//           >
+//             What is the top-rated QR code business card app?
+//           </Text>
+//           <Text>{openfaq === 1 ? '⌃' : '⌄'}</Text>
+//         </Pressable>
 
-        {openfaq === 1 && (
-          <Text style={{ margin: 20 }}>
-            There isn't a single universal best app, but the highest-rated
-            platforms offer instant QR code scanning without requiring an app
-            download, simple profile updates and a seamless sharing experience.
-            makemycard is built around these principles, providing a fast,
-            reliable and professional digital business card solution.
-          </Text>
-        )}
-      </View>
+//         {openfaq === 1 && (
+//           <Text style={{ margin: 20 }}>
+//             There isn't a single universal best app, but the highest-rated
+//             platforms offer instant QR code scanning without requiring an app
+//             download, simple profile updates and a seamless sharing experience.
+//             makemycard is built around these principles, providing a fast,
+//             reliable and professional digital business card solution.
+//           </Text>
+//         )}
+//       </View>
 
-      <View style={[stylehome.Faqvew, openfaq === 2 && stylehome.Faqvew2]}>
-        <Pressable
-          onPress={() => {
-            if (openfaq === 2) {
-              setOpenfaq(null);
-            } else {
-              setOpenfaq(2);
-            }
-          }}
-          style={{ flexDirection: 'row' }}
-        >
-          <Text
-            style={{
-              marginLeft: 10,
-              fontWeight: 'bold',
-              alignSelf: 'flex-start',
-            }}
-          >
-            How much does a digital business card cost?{' '}
-          </Text>
-          <Text>{openfaq === 2 ? '⌃' : '⌄'}</Text>
-        </Pressable>
+//       <View style={[stylehome.Faqvew, openfaq === 2 && stylehome.Faqvew2]}>
+//         <Pressable
+//           onPress={() => {
+//             if (openfaq === 2) {
+//               setOpenfaq(null);
+//             } else {
+//               setOpenfaq(2);
+//             }
+//           }}
+//           style={{ flexDirection: 'row' }}
+//         >
+//           <Text
+//             style={{
+//               marginLeft: 10,
+//               fontWeight: 'bold',
+//               alignSelf: 'flex-start',
+//             }}
+//           >
+//             How much does a digital business card cost?{' '}
+//           </Text>
+//           <Text>{openfaq === 2 ? '⌃' : '⌄'}</Text>
+//         </Pressable>
 
-        {openfaq === 2 && (
-          <Text style={{ margin: 20 }}>
-            makemycard offers paid plans only, with pricing based on your needs.
-            Whether you're an individual professional or managing an entire
-            team, you can choose from multiple plans that include different
-            features and capabilities. Refer to the pricing section above for
-            detailed plan comparisons.
-          </Text>
-        )}
-      </View>
+//         {openfaq === 2 && (
+//           <Text style={{ margin: 20 }}>
+//             makemycard offers paid plans only, with pricing based on your needs.
+//             Whether you're an individual professional or managing an entire
+//             team, you can choose from multiple plans that include different
+//             features and capabilities. Refer to the pricing section above for
+//             detailed plan comparisons.
+//           </Text>
+//         )}
+//       </View>
 
-      <View style={[stylehome.Faqvew, openfaq === 3 && stylehome.Faqvew2]}>
-        <Pressable
-          onPress={() => {
-            if (openfaq === 3) {
-              setOpenfaq(null);
-            } else {
-              setOpenfaq(3);
-            }
-          }}
-          style={{ flexDirection: 'row' }}
-        >
-          <Text
-            style={{
-              marginLeft: 10,
-              fontWeight: 'bold',
-              alignSelf: 'flex-start',
-            }}
-          >
-            What is the difference between a digital business card, a virtual
-            business card and an electronic business card?
-          </Text>
-          <Text>{openfaq === 3 ? '⌃' : '⌄'}</Text>
-        </Pressable>
+//       <View style={[stylehome.Faqvew, openfaq === 3 && stylehome.Faqvew2]}>
+//         <Pressable
+//           onPress={() => {
+//             if (openfaq === 3) {
+//               setOpenfaq(null);
+//             } else {
+//               setOpenfaq(3);
+//             }
+//           }}
+//           style={{ flexDirection: 'row' }}
+//         >
+//           <Text
+//             style={{
+//               marginLeft: 10,
+//               fontWeight: 'bold',
+//               alignSelf: 'flex-start',
+//             }}
+//           >
+//             What is the difference between a digital business card, a virtual
+//             business card and an electronic business card?
+//           </Text>
+//           <Text>{openfaq === 3 ? '⌃' : '⌄'}</Text>
+//         </Pressable>
 
-        {openfaq === 3 && (
-          <Text style={{ margin: 20 }}>
-            There is no functional difference between these terms they all
-            describe a business card that exists digitally instead of on paper.
-            The real difference lies in how the card is shared. Here with
-            makemycard you can share your digital business card using a QR code,
-            direct link or mobile wallet, making it accessible in any networking
-            situation.{' '}
-          </Text>
-        )}
-      </View>
-    </View>
-  );
-}
+//         {openfaq === 3 && (
+//           <Text style={{ margin: 20 }}>
+//             There is no functional difference between these terms they all
+//             describe a business card that exists digitally instead of on paper.
+//             The real difference lies in how the card is shared. Here with
+//             makemycard you can share your digital business card using a QR code,
+//             direct link or mobile wallet, making it accessible in any networking
+//             situation.{' '}
+//           </Text>
+//         )}
+//       </View>
+//     </View>
+//   );
+// }
 
-function Banner() {
-  const movx = useRef(new Animated.Value(0)).current;
-  // const [ispaused,setIspaused]=useState(false)
-  const animation = useRef<any>(null);
+// function Banner() {
+//   const movx = useRef(new Animated.Value(0)).current;
+//   // const [ispaused,setIspaused]=useState(false)
+//   const animation = useRef<any>(null);
 
-  useEffect(() => {
-    animation.current = Animated.loop(
-      Animated.timing(movx, {
-        toValue: -500,
-        duration: 10000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    );
-    animation.current.start();
+//   useEffect(() => {
+//     animation.current = Animated.loop(
+//       Animated.timing(movx, {
+//         toValue: -500,
+//         duration: 10000,
+//         easing: Easing.linear,
+//         useNativeDriver: true,
+//       }),
+//     );
+//     animation.current.start();
 
-    return () => {
-      if (animation.current) {
-        animation.current.stop();
-      }
-    };
-  }, [movx]);
+//     return () => {
+//       if (animation.current) {
+//         animation.current.stop();
+//       }
+//     };
+//   }, [movx]);
 
-  return (
-    <Animated.View
-      style={[
-        stylehome.Logorow,
-        {
-          transform: [{ translateX: movx }],
-        },
-      ]}
-    >
-      <Image
-        source={require('./assets/Repeat Grid 1.png')}
-        style={stylehome.brandlogs}
-        resizeMode="contain"
-      />
-      <Image
-        source={require('./assets/Repeat Grid 1.png')}
-        style={stylehome.brandlogs}
-        resizeMode="contain"
-      />
-    </Animated.View>
-  );
-}
+//   return (
+//     <Animated.View
+//       style={[
+//         stylehome.Logorow,
+//         {
+//           transform: [{ translateX: movx }],
+//         },
+//       ]}
+//     >
+//       <Image
+//         source={require('./assets/Repeat Grid 1.png')}
+//         style={stylehome.brandlogs}
+//         resizeMode="contain"
+//       />
+//       <Image
+//         source={require('./assets/Repeat Grid 1.png')}
+//         style={stylehome.brandlogs}
+//         resizeMode="contain"
+//       />
+//     </Animated.View>
+//   );
+// }
 
 
 
-function Home({ navigation }: { navigation: any }) {
-  const [press, setPress] = useState(false);
+// function Home({ navigation }: { navigation: any }) {
+//   const [press, setPress] = useState(false);
 
-  const [menuopen, setMenuopen] = useState(false);
+//   const [menuopen, setMenuopen] = useState(false);
 
-  const Scrollref = useRef<any>(null);
+//   const Scrollref = useRef<any>(null);
 
-  return (
-    <ScrollView ref={Scrollref}>
-      <View style={{ backgroundColor: '#F5F2E9' }}>
-        <View style={stylehome.topview}>
-          <Image
-            source={require('./assets/c.png')}
-            resizeMode="contain"
-            style={stylehome.toplogo}
-          />
-          <View style={stylehome.menulogo}>
-            <Pressable
-              style={{ marginTop: 10 }}
-              onPress={() => {
-                setMenuopen(!menuopen);
-              }}
-            >
-              <Text style={{ color: 'black' }}>{menuopen ? '×' : '☰'}</Text>
-            </Pressable>
-          </View>
+//   return (
+//     <ScrollView ref={Scrollref}>
+//       <View style={{ backgroundColor: '#F5F2E9' }}>
+//         <View style={stylehome.topview}>
+//           <Image
+//             source={require('./assets/c.png')}
+//             resizeMode="contain"
+//             style={stylehome.toplogo}
+//           />
+//           <View style={stylehome.menulogo}>
+//             <Pressable
+//               style={{ marginTop: 10 }}
+//               onPress={() => {
+//                 setMenuopen(!menuopen);
+//               }}
+//             >
+//               <Text style={{ color: 'black' }}>{menuopen ? '×' : '☰'}</Text>
+//             </Pressable>
+//           </View>
 
-          {menuopen && (
-            <View style={stylehome.menuvew}>
-              <Pressable
-                onPress={() => {
-                  setMenuopen(false);
-                  navigation.navigate('features');
-                }}
-              >
-                <Text style={stylehome.menutxt}>Features</Text>
-              </Pressable>
+//           {menuopen && (
+//             <View style={stylehome.menuvew}>
+//               <Pressable
+//                 onPress={() => {
+//                   setMenuopen(false);
+//                   navigation.navigate('features');
+//                 }}
+//               >
+//                 <Text style={stylehome.menutxt}>Features</Text>
+//               </Pressable>
 
-              <Pressable
-                onPress={() => {
-                  setMenuopen(false);
-                  navigation.navigate('How it work');
-                }}
-              >
-                <Text style={stylehome.menutxt}>How it works</Text>
-              </Pressable>
+//               <Pressable
+//                 onPress={() => {
+//                   setMenuopen(false);
+//                   navigation.navigate('How it work');
+//                 }}
+//               >
+//                 <Text style={stylehome.menutxt}>How it works</Text>
+//               </Pressable>
 
-              <Pressable
-                onPress={() => {
-                  setMenuopen(false);
-                  navigation.navigate('FAQ');
-                }}
-              >
-                <Text style={stylehome.menutxt}>FAQs</Text>
-              </Pressable>
+//               <Pressable
+//                 onPress={() => {
+//                   setMenuopen(false);
+//                   navigation.navigate('FAQ');
+//                 }}
+//               >
+//                 <Text style={stylehome.menutxt}>FAQs</Text>
+//               </Pressable>
 
-              <Pressable
-                style={stylehome.buldbtn}
-                onPress={() => {
-                  logout({ navigation });
-                  setMenuopen(false);
-                }}
-              >
-                <Text style={stylehome.btntxt}>Logout</Text>
-              </Pressable>
-            </View>
-          )}
-        </View>
-        <View>
-          <Text style={[stylehome.titletxt, { marginTop: 110 }]}>
-            The Business Card {'\n'}That Actually Keeps {'\n'}Up With You
-          </Text>
-          <Text style={stylehome.semititle}>
-            Job changed? Number changed? Your printed cards didn’t get the memo.
-            Build one digital card, keep it accurate forever, and hand it over
-            with a tap, a scan or a link.
-          </Text>
-          <Pressable
-            style={[
-              stylehome.buldbtn,
-              press && stylehome.btnhover,
-              { alignSelf: 'center' },
-            ]}
-            onPressIn={() => setPress(true)}
-            onPressOut={() => setPress(false)}
-            onPress={() => {
-              navigation.navigate('Card');
-            }}
-          >
-            <Text style={stylehome.btntxt}>Bulid My Card</Text>
-          </Pressable>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignSelf: 'center',
-              width: 321.57,
-              height: 48,
-            }}
-          >
-            <Image
-              source={require('./assets/image2.png')}
-              style={stylehome.revimg1}
-            />
-            <Image
-              source={require('./assets/image1.png')}
-              style={stylehome.revimg}
-            />
-            <Image
-              source={require('./assets/image3.png')}
-              style={stylehome.revimg}
-            />
-            <Image
-              source={require('./assets/image5.png')}
-              style={stylehome.revimg}
-            />
-            <Image
-              source={require('./assets/image4.png')}
-              style={stylehome.revimg}
-            />
-            <Text
-              style={{
-                alignSelf: 'center',
-                fontSize: 14,
-                fontWeight: 'normal',
-              }}
-            >
-              +100
-            </Text>
-            <Image
-              source={require('./assets/star.png')}
-              style={stylehome.star}
-            />
-          </View>
-          <View style={stylehome.blackbord}>
-            <Text
-              style={{
-                textAlign: 'center',
-                color: 'white',
-                padding: 10,
-                fontSize: 18,
-                margin: 10,
-              }}
-            >
-              Make My Card is trusted by people {'\n'}across every industry
-            </Text>
+//               <Pressable
+//                 style={stylehome.buldbtn}
+//                 onPress={() => {
+//                   logout({ navigation });
+//                   setMenuopen(false);
+//                 }}
+//               >
+//                 <Text style={stylehome.btntxt}>Logout</Text>
+//               </Pressable>
+//             </View>
+//           )}
+//         </View>
+//         <View>
+//           <Text style={[stylehome.titletxt, { marginTop: 110 }]}>
+//             The Business Card {'\n'}That Actually Keeps {'\n'}Up With You
+//           </Text>
+//           <Text style={stylehome.semititle}>
+//             Job changed? Number changed? Your printed cards didn’t get the memo.
+//             Build one digital card, keep it accurate forever, and hand it over
+//             with a tap, a scan or a link.
+//           </Text>
+//           <Pressable
+//             style={[
+//               stylehome.buldbtn,
+//               press && stylehome.btnhover,
+//               { alignSelf: 'center' },
+//             ]}
+//             onPressIn={() => setPress(true)}
+//             onPressOut={() => setPress(false)}
+//             onPress={() => {
+//               navigation.navigate('Card');
+//             }}
+//           >
+//             <Text style={stylehome.btntxt}>Bulid My Card</Text>
+//           </Pressable>
+//           <View
+//             style={{
+//               flexDirection: 'row',
+//               alignSelf: 'center',
+//               width: 321.57,
+//               height: 48,
+//             }}
+//           >
+//             <Image
+//               source={require('./assets/image2.png')}
+//               style={stylehome.revimg1}
+//             />
+//             <Image
+//               source={require('./assets/image1.png')}
+//               style={stylehome.revimg}
+//             />
+//             <Image
+//               source={require('./assets/image3.png')}
+//               style={stylehome.revimg}
+//             />
+//             <Image
+//               source={require('./assets/image5.png')}
+//               style={stylehome.revimg}
+//             />
+//             <Image
+//               source={require('./assets/image4.png')}
+//               style={stylehome.revimg}
+//             />
+//             <Text
+//               style={{
+//                 alignSelf: 'center',
+//                 fontSize: 14,
+//                 fontWeight: 'normal',
+//               }}
+//             >
+//               +100
+//             </Text>
+//             <Image
+//               source={require('./assets/star.png')}
+//               style={stylehome.star}
+//             />
+//           </View>
+//           <View style={stylehome.blackbord}>
+//             <Text
+//               style={{
+//                 textAlign: 'center',
+//                 color: 'white',
+//                 padding: 10,
+//                 fontSize: 18,
+//                 margin: 10,
+//               }}
+//             >
+//               Make My Card is trusted by people {'\n'}across every industry
+//             </Text>
 
-            <Banner />
-          </View>
-        </View>
-      </View>
-    </ScrollView>
-  );
-}
+//             <Banner />
+//           </View>
+//         </View>
+//       </View>
+//     </ScrollView>
+//   );
+// }
 
-function Features() {
-  const [press2, setPress2] = useState(false);
+// function Features() {
+//   const [press2, setPress2] = useState(false);
 
-  return (
-    <ScrollView>
-      <View>
-        <Text
-          style={{ textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}
-        >
-          Features
-        </Text>
-        <Text style={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold' }}>
-          One Card. Every Way To {'\n'}Share It.
-        </Text>
-        <Text style={{ textAlign: 'center', marginTop: 8 }}>
-          Build your card once, it powers everything else {'\n'}on this list.
-        </Text>
+//   return (
+//     <ScrollView>
+//       <View>
+//         <Text
+//           style={{ textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}
+//         >
+//           Features
+//         </Text>
+//         <Text style={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold' }}>
+//           One Card. Every Way To {'\n'}Share It.
+//         </Text>
+//         <Text style={{ textAlign: 'center', marginTop: 8 }}>
+//           Build your card once, it powers everything else {'\n'}on this list.
+//         </Text>
 
-        <View style={stylehome.cardvew}>
-          <Text
-            style={{
-              textAlign: 'left',
-              padding: 10,
-              fontSize: 30,
-              color: '#1D1D1F',
-              fontWeight: 'bold',
-            }}
-          >
-            Custom Digital Card
-          </Text>
-          <Text
-            style={{
-              textAlign: 'left',
-              fontSize: 14,
-              color: '#1D1D1F',
-              margin: 10,
-            }}
-          >
-            This is the one you actually build — name, title, number, email,
-            socials, the works. Every other feature on this page runs off it, so
-            change something once and it updates everywhere it’s shared.
-          </Text>
-          <Pressable
-            style={[
-              stylehome.buldbtn,
-              press2 && stylehome.btnhover,
-              { alignSelf: 'flex-start' },
-            ]}
-            onPressIn={() => setPress2(true)}
-            onPressOut={() => setPress2(false)}
-          >
-            <Text style={stylehome.btntxt}>Create Now</Text>
-          </Pressable>
-          <Image
-            source={require('./assets/mobile.webp')}
-            style={stylehome.cardlogo}
-            resizeMode="cover"
-          />
-        </View>
+//         <View style={stylehome.cardvew}>
+//           <Text
+//             style={{
+//               textAlign: 'left',
+//               padding: 10,
+//               fontSize: 30,
+//               color: '#1D1D1F',
+//               fontWeight: 'bold',
+//             }}
+//           >
+//             Custom Digital Card
+//           </Text>
+//           <Text
+//             style={{
+//               textAlign: 'left',
+//               fontSize: 14,
+//               color: '#1D1D1F',
+//               margin: 10,
+//             }}
+//           >
+//             This is the one you actually build — name, title, number, email,
+//             socials, the works. Every other feature on this page runs off it, so
+//             change something once and it updates everywhere it’s shared.
+//           </Text>
+//           <Pressable
+//             style={[
+//               stylehome.buldbtn,
+//               press2 && stylehome.btnhover,
+//               { alignSelf: 'flex-start' },
+//             ]}
+//             onPressIn={() => setPress2(true)}
+//             onPressOut={() => setPress2(false)}
+//           >
+//             <Text style={stylehome.btntxt}>Create Now</Text>
+//           </Pressable>
+//           <Image
+//             source={require('./assets/mobile.webp')}
+//             style={stylehome.cardlogo}
+//             resizeMode="cover"
+//           />
+//         </View>
 
-        <View style={stylehome.cardvew}>
-          <Image
-            source={require('./assets/smartwatch.webp')}
-            style={stylehome.cardlogo}
-          />
+//         <View style={stylehome.cardvew}>
+//           <Image
+//             source={require('./assets/smartwatch.webp')}
+//             style={stylehome.cardlogo}
+//           />
 
-          <View style={stylehome.overlay}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>QR Code</Text>
-            <Text style={{ marginTop: 5, fontSize: 13, marginBottom: 15 }}>
-              Every card comes with its own{' '}
-              <Text style={{ fontWeight: 'bold' }}>QR code.</Text> One scan
-              opens it and saves your details instantly.
-            </Text>
-          </View>
-        </View>
+//           <View style={stylehome.overlay}>
+//             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>QR Code</Text>
+//             <Text style={{ marginTop: 5, fontSize: 13, marginBottom: 15 }}>
+//               Every card comes with its own{' '}
+//               <Text style={{ fontWeight: 'bold' }}>QR code.</Text> One scan
+//               opens it and saves your details instantly.
+//             </Text>
+//           </View>
+//         </View>
 
-        <View style={stylehome.cardvew}>
-          <Image
-            source={require('./assets/card.webp')}
-            style={stylehome.cardlogo}
-          />
+//         <View style={stylehome.cardvew}>
+//           <Image
+//             source={require('./assets/card.webp')}
+//             style={stylehome.cardlogo}
+//           />
 
-          <View style={stylehome.overlay}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Wallet</Text>
-            <Text style={{ marginTop: 5, fontSize: 13, marginBottom: 15 }}>
-              Drop your card straight into{' '}
-              <Text style={{ fontWeight: 'bold' }}>Apple Wallet</Text> "or"{' '}
-              <Text style={{ fontWeight: 'bold' }}> Google Wallet</Text> "One
-              tap and it's ready to go.."
-            </Text>
-          </View>
-        </View>
+//           <View style={stylehome.overlay}>
+//             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Wallet</Text>
+//             <Text style={{ marginTop: 5, fontSize: 13, marginBottom: 15 }}>
+//               Drop your card straight into{' '}
+//               <Text style={{ fontWeight: 'bold' }}>Apple Wallet</Text> "or"{' '}
+//               <Text style={{ fontWeight: 'bold' }}> Google Wallet</Text> "One
+//               tap and it's ready to go.."
+//             </Text>
+//           </View>
+//         </View>
 
-        <View style={stylehome.cardvew}>
-          <Image
-            source={require('./assets/feature3.webp')}
-            style={stylehome.cardlogo}
-          />
+//         <View style={stylehome.cardvew}>
+//           <Image
+//             source={require('./assets/feature3.webp')}
+//             style={stylehome.cardlogo}
+//           />
 
-          <View style={stylehome.overlay}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-              Virtual Backgrounds
-            </Text>
-            <Text style={{ marginTop: 5, fontSize: 13, marginBottom: 15 }}>
-              Wear your card on your video calls. Anyone on the call can scan
-              and save your details.
-            </Text>
-          </View>
-        </View>
-      </View>
-    </ScrollView>
-  );
-}
+//           <View style={stylehome.overlay}>
+//             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+//               Virtual Backgrounds
+//             </Text>
+//             <Text style={{ marginTop: 5, fontSize: 13, marginBottom: 15 }}>
+//               Wear your card on your video calls. Anyone on the call can scan
+//               and save your details.
+//             </Text>
+//           </View>
+//         </View>
+//       </View>
+//     </ScrollView>
+//   );
+// }
 
-function Howitwork() {
-  return (
-    <ScrollView>
-      <View>
-        <Text
-          style={{
-            textAlign: 'center',
-            marginTop: 10,
-            marginBottom: 10,
-            fontWeight: 'bold',
-          }}
-        >
-          HOW IT WORKS
-        </Text>
-        <Text style={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold' }}>
-          From Blank Card To {'\n'} Shareable Link In Three{'\n'} Steps
-        </Text>
+// function Howitwork() {
+//   return (
+//     <ScrollView>
+//       <View>
+//         <Text
+//           style={{
+//             textAlign: 'center',
+//             marginTop: 10,
+//             marginBottom: 10,
+//             fontWeight: 'bold',
+//           }}
+//         >
+//           HOW IT WORKS
+//         </Text>
+//         <Text style={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold' }}>
+//           From Blank Card To {'\n'} Shareable Link In Three{'\n'} Steps
+//         </Text>
 
-        <View style={stylehome.workvew}>
-          <View style={stylehome.dot}>
-            <Text style={{ color: 'white' }}>01</Text>
-          </View>
-          <Image
-            source={require('./assets/work1.png')}
-            style={stylehome.workimg}
-          />
-        </View>
-        <Text
-          style={{
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: 18,
-            padding: 5,
-          }}
-        >
-          Customize Your Card
-        </Text>
-        <Text style={{ textAlign: 'center' }}>
-          Add whatever you want people to {'\n'}find name, title, phone, email,
-          social {'\n'}links. You decide what goes on the {'\n'}card.
-        </Text>
+//         <View style={stylehome.workvew}>
+//           <View style={stylehome.dot}>
+//             <Text style={{ color: 'white' }}>01</Text>
+//           </View>
+//           <Image
+//             source={require('./assets/work1.png')}
+//             style={stylehome.workimg}
+//           />
+//         </View>
+//         <Text
+//           style={{
+//             textAlign: 'center',
+//             fontWeight: 'bold',
+//             fontSize: 18,
+//             padding: 5,
+//           }}
+//         >
+//           Customize Your Card
+//         </Text>
+//         <Text style={{ textAlign: 'center' }}>
+//           Add whatever you want people to {'\n'}find name, title, phone, email,
+//           social {'\n'}links. You decide what goes on the {'\n'}card.
+//         </Text>
 
-        <View style={stylehome.workvew}>
-          <View style={stylehome.dot}>
-            <Text style={{ color: 'white' }}>02</Text>
-          </View>
-          <Image
-            source={require('./assets/work2.png')}
-            style={stylehome.workimg}
-          />
-        </View>
-        <Text
-          style={{
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: 18,
-            padding: 5,
-          }}
-        >
-          Set Up Your Account
-        </Text>
-        <Text style={{ textAlign: 'center' }}>
-          One email, one account, one card. No {'\n'}juggling multiple logins or
-          wondering {'\n'}which version of your card is currently {'\n'}
-          live.
-        </Text>
+//         <View style={stylehome.workvew}>
+//           <View style={stylehome.dot}>
+//             <Text style={{ color: 'white' }}>02</Text>
+//           </View>
+//           <Image
+//             source={require('./assets/work2.png')}
+//             style={stylehome.workimg}
+//           />
+//         </View>
+//         <Text
+//           style={{
+//             textAlign: 'center',
+//             fontWeight: 'bold',
+//             fontSize: 18,
+//             padding: 5,
+//           }}
+//         >
+//           Set Up Your Account
+//         </Text>
+//         <Text style={{ textAlign: 'center' }}>
+//           One email, one account, one card. No {'\n'}juggling multiple logins or
+//           wondering {'\n'}which version of your card is currently {'\n'}
+//           live.
+//         </Text>
 
-        <View style={stylehome.workvew}>
-          <View style={stylehome.dot}>
-            <Text style={{ color: 'white' }}>03</Text>
-          </View>
-          <Image
-            source={require('./assets/work3.png')}
-            style={stylehome.workimg}
-          />
-        </View>
-        <Text
-          style={{
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: 18,
-            padding: 5,
-          }}
-        >
-          Pay And Go Live
-        </Text>
-        <Text style={{ textAlign: 'center' }}>
-          Complete your payment and your{'\n'}card goes live straight away,
-          ready to {'\n'}share within minutes.
-        </Text>
-      </View>
-    </ScrollView>
-  );
-}
+//         <View style={stylehome.workvew}>
+//           <View style={stylehome.dot}>
+//             <Text style={{ color: 'white' }}>03</Text>
+//           </View>
+//           <Image
+//             source={require('./assets/work3.png')}
+//             style={stylehome.workimg}
+//           />
+//         </View>
+//         <Text
+//           style={{
+//             textAlign: 'center',
+//             fontWeight: 'bold',
+//             fontSize: 18,
+//             padding: 5,
+//           }}
+//         >
+//           Pay And Go Live
+//         </Text>
+//         <Text style={{ textAlign: 'center' }}>
+//           Complete your payment and your{'\n'}card goes live straight away,
+//           ready to {'\n'}share within minutes.
+//         </Text>
+//       </View>
+//     </ScrollView>
+//   );
+// }
 
-function Frequntly() {
-  return (
-    <View>
-      <View>
-        <Text
-          style={{
-            textAlign: 'center',
-            marginTop: 10,
-            marginBottom: 10,
-            fontWeight: 'bold',
-          }}
-        >
-          FAQ
-        </Text>
-        <Text style={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold' }}>
-          Questions People Actually{'\n'} Ask Before Signing Up
-        </Text>
-      </View>
+// function Frequntly() {
+//   return (
+//     <View>
+//       <View>
+//         <Text
+//           style={{
+//             textAlign: 'center',
+//             marginTop: 10,
+//             marginBottom: 10,
+//             fontWeight: 'bold',
+//           }}
+//         >
+//           FAQ
+//         </Text>
+//         <Text style={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold' }}>
+//           Questions People Actually{'\n'} Ask Before Signing Up
+//         </Text>
+//       </View>
 
-      <View>
-        <Faq />
-      </View>
-    </View>
-  );
-}
+//       <View>
+//         <Faq />
+//       </View>
+//     </View>
+//   );
+// }
 
 
 // function create() {
