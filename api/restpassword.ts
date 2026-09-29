@@ -16,7 +16,7 @@ export async function Restpassword(currentpass:string,newpassword:string){
             method:"POST",
             headers:{
                 "Content-type":"application/json",
-                Authorization:` Bearer ${token}`
+                Authorization:`Bearer ${token}`
             },
             body:JSON.stringify({
                 currentPassword:currentpass,

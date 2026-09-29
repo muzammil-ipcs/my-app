@@ -1,12 +1,11 @@
 import { Text, View, Pressable, Image } from 'react-native';
-import { Pressanimation } from './pressanimation';
+import { usePressanimation } from './pressanimation';
 import { Animated } from 'react-native';
 import { cardstyle, Style } from '../Style';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Createcardstyle } from '../Style';
-import {Bcard_Qrcode} from './qrcode';
-
+import { Bcard_Qrcode } from './qrcode';
 
 function Checkcard({
   navigation,
@@ -30,11 +29,11 @@ function Checkcard({
       ? bcard.profile_photo
       : `http://10.0.2.2:5004/public/${bcard.profile_photo}`
     : null;
- 
+
   return (
     <View>
       {bcard ? (
-        <View >
+        <View>
           <Animated.View
             style={{
               margin: 10,
@@ -47,12 +46,16 @@ function Checkcard({
               style={[Style.mainbtn, { width: 120 }]}
               onPressIn={onpressin}
               onPressOut={onpressout}
-              onPress={() => navigation.navigate('Createcard',{
-                isEditmode : "edit" ,
-                Card : bcard
-              },
-              console.log("carddata navigate for edit",bcard)
-              )}
+              onPress={() =>
+                navigation.navigate(
+                  'Createcard',
+                  {
+                    isEditmode: 'edit',
+                    Card: bcard,
+                  },
+                  console.log('carddata navigate for edit', bcard),
+                )
+              }
             >
               <Text style={Style.btntxt}>Edit card</Text>
             </Pressable>
@@ -138,10 +141,12 @@ function Checkcard({
               style={[Style.mainbtn, { width: 140 }]}
               onPressIn={onpressin}
               onPressOut={onpressout}
-              onPress={() => navigation.navigate('Createcard',{
-                isEditmode: "add",
-                Card : bcard,
-              })}
+              onPress={() =>
+                navigation.navigate('Createcard', {
+                  isEditmode: 'add',
+                  Card: bcard,
+                })
+              }
             >
               <Text style={Style.btntxt}>Add Card</Text>
             </Pressable>
@@ -153,19 +158,19 @@ function Checkcard({
 }
 
 export function Cardview({ navigation }: any) {
-  const { animationbtn, onpressin, onpressout } = Pressanimation();
+  const { animationbtn, onpressin, onpressout } = usePressanimation();
   const [showview, setShowview] = useState('cardview');
   const [bcard, setBcard] = useState<any>(null);
-  AsyncStorage.setItem('templte_id', '63b3c94e23c17d10871b3312');
 
   useEffect(() => {
     async function getprofile() {
+      AsyncStorage.setItem('templte_id', '63b3c94e23c17d10871b3312');
       try {
         console.log('get profile ......... ');
         const user_Id = await AsyncStorage.getItem('user_Id');
         const token = await AsyncStorage.getItem('token');
-        console.log("user Id:",user_Id);
-        console.log("login token:",token);
+        console.log('user Id:', user_Id);
+        console.log('login token:', token);
         const response = await fetch(
           'http://10.0.2.2:5004/api/users/getuserprofile',
           {
@@ -180,7 +185,7 @@ export function Cardview({ navigation }: any) {
           },
         );
         const data = await response.json();
-        console.log("user profile :",data);
+        console.log('user profile :', data);
 
         if (data.code === 200 || data.status === 'success') {
           const response1 = await fetch(
@@ -201,34 +206,37 @@ export function Cardview({ navigation }: any) {
             getcard.code === '200' ||
             getcard.result[0]?.cardStatus === 'active'
           ) {
-            console.log("user bcard find successfully",getcard.result[0]);
+            console.log('user bcard find successfully', getcard.result[0]);
             await AsyncStorage.setItem('cardadded', 'true');
             setBcard(getcard.result[0]);
             await AsyncStorage.setItem(
               'getcard',
-              JSON.stringify(getcard.result[0]));
-              await AsyncStorage.setItem(
-                "bcard_id",
-                getcard.result[0]._id)
+              JSON.stringify(getcard.result[0]),
+            );
+            await AsyncStorage.setItem('bcard_id', getcard.result[0]._id);
 
-                const subscription_response = await fetch("http://10.0.2.2:5004/api/subscription/me",{
-                  method:"GET",
-                   headers: {
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${token}`,
+            const subscription_response = await fetch(
+              'http://10.0.2.2:5004/api/subscription/me',
+              {
+                method: 'GET',
+                headers: {
+                  'Content-type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
               },
-                })
+            );
 
-                const Subscription=  await subscription_response.json();
-                if(subscription_response.ok || Subscription.code === 200){
-
-                console.log("subscription status",Subscription.result?.status)
-                await AsyncStorage.setItem("subscription_status",Subscription.result?.status)
-                }
-                else{
-                  await AsyncStorage.removeItem("subscription_status")
-                  console.log("subsciption not found")
-                }
+            const Subscription = await subscription_response.json();
+            if (subscription_response.ok || Subscription.code === 200) {
+              console.log('subscription status', Subscription.result?.status);
+              await AsyncStorage.setItem(
+                'subscription_status',
+                Subscription.result?.status,
+              );
+            } else {
+              await AsyncStorage.removeItem('subscription_status');
+              console.log('subsciption not found');
+            }
           } else {
             await AsyncStorage.setItem('cardadded', 'false');
           }
@@ -241,8 +249,6 @@ export function Cardview({ navigation }: any) {
     getprofile();
   }, []);
 
-
-
   return (
     <View style={cardstyle.mainview}>
       <View
@@ -250,6 +256,7 @@ export function Cardview({ navigation }: any) {
           flexDirection: 'row',
           justifyContent: 'space-around',
           marginTop: 20,
+          width: '100%',
         }}
       >
         <Pressable
@@ -303,11 +310,7 @@ export function Cardview({ navigation }: any) {
         </View>
       )}
 
-      {showview === "qr" && (
-        <Bcard_Qrcode bcard={bcard}/>
-        
-      )}
-      
+      {showview === 'qr' && <Bcard_Qrcode bcard={bcard} />}
     </View>
   );
 }
