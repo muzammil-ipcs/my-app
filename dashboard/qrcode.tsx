@@ -7,27 +7,28 @@ import { useEffect, useState } from 'react';
 
 export function Bcard_Qrcode({ bcard }: any) {
   const [subscription, setSubscription] = useState('');
-
+  const bcard_url = bcard?.bcard_url
+    ? `http://10.0.2.2:5173/card/${bcard?.bcard_url}`
+    : '';
+  console.log('user bcard url:', bcard_url);
   useEffect(() => {
     async function checksubscription() {
-
       const subscription_status = await AsyncStorage.getItem(
         'subscription_status',
       );
-      console.log("subscription status :",subscription_status)
-      if(subscription_status?.toLowerCase() === "active" && bcard_url !== " "){
-        setSubscription("active")
-      }
-      else{
-        setSubscription("")
-        console.log("subscription not found")
+      console.log('subscription status :', subscription_status);
+      if (
+        subscription_status?.toLowerCase() === 'active' &&
+        bcard_url !== ''
+      ) {
+        setSubscription('active');
+      } else {
+        setSubscription('');
+        console.log('subscription not found');
       }
     }
     checksubscription();
-  });
-
-  const bcard_url = bcard?.bcard_url? `http://10.0.2.2:5173/card/${bcard?.bcard_url}` : "";
-  console.log('user bcard url:', bcard_url);
+  }, [bcard_url]);
 
   return (
     <View>
@@ -41,7 +42,7 @@ export function Bcard_Qrcode({ bcard }: any) {
             borderRadius: 10,
           }}
         >
-          {subscription === "active" ?
+          {subscription === 'active' ? (
             <Pressable
               onPress={() => {
                 Linking.openURL(bcard_url);
@@ -49,15 +50,14 @@ export function Bcard_Qrcode({ bcard }: any) {
             >
               <QRCode value={bcard_url} size={150} />
             </Pressable>
-            : 
-            <Text>genrate the Qr code</Text>
-            }
-          
+          ) : (
+            <Text>Create a card to genrate the Qr code</Text>
+          )}
         </View>
-
+        {subscription === 'active' &&
         <Pressable style={cardstyle.mainbtn}>
           <Text style={cardstyle.btntxt}>Download Qr</Text>
-        </Pressable>
+        </Pressable>}
       </View>
     </View>
   );

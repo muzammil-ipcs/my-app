@@ -5,7 +5,7 @@ import Email_icon from '../assets/email_icno.svg';
 import Lock_icon from '../assets/lock_icon.svg';
 import { useEffect, useState } from 'react';
 import { TextInput } from 'react-native';
-import { Pressanimation } from './pressanimation';
+import { usePressanimation } from './pressanimation';
 import { Animated } from 'react-native';
 import { Restpassword } from '../api/restpassword';
 import { KeyboardAvoidingView } from 'react-native';
@@ -19,7 +19,7 @@ export function Cardsetting() {
   const [newpass, setNewpass] = useState('');
   const [confirmpass, setConfirmpass] = useState('');
 
-  const { animationbtn, onpressin, onpressout } = Pressanimation();
+  const { animationbtn, onpressin, onpressout } = usePressanimation();
 
   const [username, setUsername] = useState<any>('');
   const [email, setEmail] = useState<any>('');
@@ -103,7 +103,7 @@ export function Cardsetting() {
           </Text>
 
           <View style={cardstyle.subview}>
-            <Text style={{ margin: 5, fontWeight: 'bold', marginRight: 160 }}>
+            <Text style={{ margin: 5, fontWeight: 'bold', }}>
               Account Details
             </Text>
 
@@ -131,13 +131,13 @@ export function Cardsetting() {
           </View>
 
           <View style={cardstyle.subview}>
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row', alignItems:"flex-start"}}>
               <View style={cardstyle.icon}>
                 <Lock_icon width={22} height={22} />
               </View>
               <View>
                 <Text
-                  style={{ margin: 5, fontWeight: 'bold', marginRight: 150 }}
+                  style={{ margin: 5, fontWeight: 'bold',}}
                 >
                   Password
                 </Text>

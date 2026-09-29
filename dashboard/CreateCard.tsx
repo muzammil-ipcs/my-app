@@ -40,7 +40,7 @@ function normalizeImageUrl(value?: string | null): string | null {
   return `${API_BASE_URL}/public/${value}`;
 }
 
-export function Creatcard( navigation :any) {
+export function Creatcard(navigation: any) {
   const route = useRoute<RouteProp<RootStackParamList, 'Createcard'>>();
   const [step, setStep] = useState<any>('1');
   const [componylogo, setComponylogo] = useState<any>();
@@ -266,31 +266,31 @@ export function Creatcard( navigation :any) {
     (x !== '' ? 1 : 0);
 
   useEffect(() => {
-  if (scroll === 3) {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scrollX, {
-          toValue: -70,
-          duration: 3000,
-          useNativeDriver: true,
-        }),
+    if (scroll === 3) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scrollX, {
+            toValue: -70,
+            duration: 3000,
+            useNativeDriver: true,
+          }),
 
-        Animated.timing(scrollX, {
-          toValue: 0,
-          duration: 3000,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  } else {
-    scrollX.stopAnimation();
-    scrollX.setValue(0);
-  }
+          Animated.timing(scrollX, {
+            toValue: 0,
+            duration: 3000,
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    } else {
+      scrollX.stopAnimation();
+      scrollX.setValue(0);
+    }
 
-  return () => {
-    scrollX.stopAnimation();
-  };
-}, [scroll]);
+    return () => {
+      scrollX.stopAnimation();
+    };
+  }, [scroll]);
 
   async function uploadImage(assest: any, endpoint: string): Promise<string> {
     const formData = new FormData();
@@ -300,7 +300,7 @@ export function Creatcard( navigation :any) {
       name: assest.fileName || 'image.jpg',
       type: assest.type || 'image/jpeg',
     } as any);
-    console.log("upload Image")
+    console.log('upload Image');
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
@@ -308,7 +308,7 @@ export function Creatcard( navigation :any) {
     });
 
     const data = await response.json();
-    console.log(data)
+    console.log(data);
 
     if (!response.ok || !data.result) {
       throw new Error(data.message || 'image upload failed');
@@ -329,14 +329,13 @@ export function Creatcard( navigation :any) {
           const asset = response.assets?.[0];
           console.log(asset);
           if (!asset?.uri) {
-            console.log("no uri of image",asset.uri)
+            console.log('no uri of image', asset.uri);
             return;
           }
 
           try {
             if (type === 'company') {
               const filename = await uploadImage(asset, '/api/home/addimage');
-              
 
               setCompanyfilename(filename);
               setComponylogo(normalizeImageUrl(filename));
@@ -367,7 +366,8 @@ export function Creatcard( navigation :any) {
       const bcard_id = await AsyncStorage.getItem('bcard_id');
       console.log('business card id', bcard_id);
 
-      const nextProfilePhoto = profilefilename || editbcard?.profile_photo || '';
+      const nextProfilePhoto =
+        profilefilename || editbcard?.profile_photo || '';
       const nextCompanyLogo = companyfilename || editbcard?.comapny_logo || '';
 
       const response = await fetch(
@@ -415,7 +415,7 @@ export function Creatcard( navigation :any) {
         <View style={[Createcardstyle.frame1, { pointerEvents: 'none' }]}>
           {componylogo || publishedCard ? (
             <Image
-              source={{ uri: componylogo || publishedCard.comapny_logo}}
+              source={{ uri: componylogo || publishedCard.comapny_logo }}
               style={Createcardstyle.companylogo}
               resizeMode="contain"
             />
@@ -467,8 +467,9 @@ export function Creatcard( navigation :any) {
               ? role
                 ? role
                 : editbcard.role
-
-              : publishedCard ?  publishedCard?.role : role  || 'Co-Founder & Creative Director'}
+              : publishedCard
+              ? publishedCard?.role
+              : role || 'Co-Founder & Creative Director'}
           </Text>
           <View style={Createcardstyle.userinput}>
             <Image
@@ -478,7 +479,9 @@ export function Creatcard( navigation :any) {
             <Text style={Createcardstyle.call}>
               {isEditmode === 'edit'
                 ? fullnnumber || editbcard?.cellPhone || '+1 1234567890'
-                : fullnnumber.length<2 ? fullnnumber :'+1 1234567890'}
+                : fullnnumber.length < 2
+                ? fullnnumber
+                : '+1 1234567890'}
             </Text>
           </View>
           <View style={Createcardstyle.userinput}>
@@ -579,51 +582,54 @@ export function Creatcard( navigation :any) {
           style={Createcardstyle.iphone}
           resizeMode="stretch"
         />
-        {isEditmode === 'add' && (
-          <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-            <View
-              style={
-                step === '1'
-                  ? Createcardstyle.selectsteps
-                  : Createcardstyle.steps
-              }
-            >
-              <Text
-                style={{ margin: 5, color: step === '1' ? 'white' : 'black' }}
-              >
-                1
-              </Text>
-            </View>
 
-            <View
-              style={
-                step === '2'
-                  ? Createcardstyle.selectsteps
-                  : Createcardstyle.steps
-              }
-            >
-              <Text
-                style={{ margin: 5, color: step === '2' ? 'white' : 'black' }}
+        <View style={{ height: 67 }}>
+          {isEditmode === 'add' && (
+            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+              <View
+                style={
+                  step === '1'
+                    ? Createcardstyle.selectsteps
+                    : Createcardstyle.steps
+                }
               >
-                2
-              </Text>
-            </View>
+                <Text
+                  style={{ margin: 5, color: step === '1' ? 'white' : 'black' }}
+                >
+                  1
+                </Text>
+              </View>
 
-            <View
-              style={
-                step === '3'
-                  ? Createcardstyle.selectsteps
-                  : Createcardstyle.steps
-              }
-            >
-              <Text
-                style={{ margin: 5, color: step === '3' ? 'white' : 'black' }}
+              <View
+                style={
+                  step === '2'
+                    ? Createcardstyle.selectsteps
+                    : Createcardstyle.steps
+                }
               >
-                3
-              </Text>
+                <Text
+                  style={{ margin: 5, color: step === '2' ? 'white' : 'black' }}
+                >
+                  2
+                </Text>
+              </View>
+
+              <View
+                style={
+                  step === '3'
+                    ? Createcardstyle.selectsteps
+                    : Createcardstyle.steps
+                }
+              >
+                <Text
+                  style={{ margin: 5, color: step === '3' ? 'white' : 'black' }}
+                >
+                  3
+                </Text>
+              </View>
             </View>
-          </View>
-        )}
+          )}
+        </View>
       </View>
 
       {(step === '1' || step === '2') && (
@@ -643,11 +649,19 @@ export function Creatcard( navigation :any) {
             <View style={Createcardstyle.customcardview}>
               <Text style={{ margin: 10, fontWeight: 'bold' }}>Add Images</Text>
 
-              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  paddingHorizontal: 10,
+                }}
+              >
                 <Pressable
                   onPress={() => {
                     Addimages('company');
                   }}
+                  style={{ width: '45%' }}
                 >
                   <View style={Createcardstyle.addimageview}>
                     {componylogo ? (
@@ -659,7 +673,14 @@ export function Creatcard( navigation :any) {
                     ) : (
                       <Image source={require('../assets/add_image_icon.png')} />
                     )}
-                    <Text>Company Logo</Text>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      Company Logo
+                    </Text>
                   </View>
                 </Pressable>
 
@@ -667,7 +688,7 @@ export function Creatcard( navigation :any) {
                   onPress={() => {
                     Addimages('profile');
                   }}
-                  style={{ alignItems: 'center' }}
+                  style={{ alignItems: 'center', width: '45%' }}
                 >
                   <View style={Createcardstyle.addimageview}>
                     {profilelogo ? (

@@ -54,7 +54,7 @@ export function Plans({ navigation, route }: any) {
       }
     }
     GetPlan();
-  }, [plan1, plan2, plan3]);
+  },[]);
   async function Freeplan() {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -73,7 +73,6 @@ export function Plans({ navigation, route }: any) {
           }),
         },
       );
-
 
       const data = await response.json();
       if (!response.ok || data.code !== 200 || !data.url) {
@@ -145,7 +144,6 @@ export function Plans({ navigation, route }: any) {
         throw new Error(data.message ?? 'Unable to start Stripe Checkout');
       }
       await Linking.openURL(data.url);
-      
     } catch (error) {
       console.log(error);
     }
@@ -205,14 +203,16 @@ export function Plans({ navigation, route }: any) {
             <Text>{yearly ? '/Yearly' : '/month'}</Text>
           </Text>
           <Text style={{ marginLeft: 30 }}>1 Bussiness Card</Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
             Apple & Google Wallet Passes
           </Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>Custom URL</Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
+            Custom URL
+          </Text>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
             Advanced Analytics
           </Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
             No MakeMyCard Branding
           </Text>
 
@@ -238,17 +238,21 @@ export function Plans({ navigation, route }: any) {
             <Text>{yearly ? '/Yearly' : '/month'}</Text>
           </Text>
           <Text style={{ marginLeft: 30 }}>1 Bussiness Card</Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
             Apple & Google Wallet Passes
           </Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>Custom URL</Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
+            Custom URL
+          </Text>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
             Advanced Analytics
           </Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
             No MakeMyCard Branding
           </Text>
-          <Text style={{ marginLeft: 30, marginTop: 5 }}>Team Management </Text>
+          <Text style={{ marginLeft: 30, marginRight: 20, marginTop: 5 }}>
+            Team Management{' '}
+          </Text>
 
           <Pressable style={stylehome.pricebtn} onPress={Businessplan}>
             <Text style={stylehome.btntxt}>Start Business</Text>

@@ -144,7 +144,7 @@ export function Analytics() {
       </Text>
 
       <View style={cardstyle.subview}>
-        <View style={{ flexDirection: 'row', marginRight: 130 }}>
+        <View style={{ flexDirection: 'row', marginRight:0 }}>
           <View style={cardstyle.icon}>
             <Image
               source={require('../assets/total_visit.png')}
@@ -259,7 +259,7 @@ export function Analytics() {
           </Pressable>
         </View>
       </View>
-      <View style={{ height: 250, overflow: 'hidden',width:300,marginLeft:10}}>
+      <View style={{ height: 250, overflow: 'hidden',width:"100%",marginLeft:3}}>
         <View style={analytics_style.table}>
           {/* Body: vertical scrolling only */}
           <ScrollView showsVerticalScrollIndicator={true}>

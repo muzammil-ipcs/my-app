@@ -3,7 +3,7 @@ import { Animated } from "react-native";
 
 
 
-export function Pressanimation(){
+export function usePressanimation(){
   const animationbtn = useRef(new Animated.Value(1)).current;
 
   function onpressin() {
