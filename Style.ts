@@ -139,7 +139,7 @@ export const stylehome = StyleSheet.create({
     margin: 10,
     padding: 10,
     borderRadius: 55,
-    width: 150,
+    minWidth: 130,
   },
   btnhover: {
     backgroundColor: '#1E1E1E',
@@ -311,7 +311,10 @@ export const stylehome = StyleSheet.create({
   pricevew: {
     borderWidth: 2,
     borderColor: 'black',
-    margin: 20,
+    marginVertical: 10,
+    width: '90%',
+    maxWidth: 500,
+    alignSelf: 'center',
     borderRadius: 20,
   },
   pricebtn: {
@@ -321,7 +324,10 @@ export const stylehome = StyleSheet.create({
     borderRadius: 55,
   },
   priceprovew: {
-    margin: 20,
+    marginVertical: 10,
+    width: '90%',
+    maxWidth: 500,
+    alignSelf: 'center',
     borderRadius: 20,
   },
   Faqvew: {
@@ -444,16 +450,16 @@ export const cardstyle = StyleSheet.create({
     marginTop: 50,
     fontSize: 16,
     opacity: 0.6,
-    fontWeight:"bold"
+    fontWeight: 'bold',
   },
   subview: {
     margin: 10,
-    padding: 8,
     elevation: 5,
     alignSelf: 'center',
     borderRadius: 20,
     backgroundColor: '#E5E0D3',
-    width: 300,
+    padding: 10,
+    width: '90%',
   },
   minitxt: {
     margin: 10,
@@ -525,14 +531,13 @@ export const cardstyle = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 20,
     backgroundColor: 'white',
-    width: '100%',
+    width: '90%',
   },
   paid: {
     margin: 10,
     alignSelf: 'center',
     borderRadius: 20,
-    width: '100%',
-    marginLeft: 80,
+    width: '90%',
   },
   paidtxttitle: {
     opacity: 0.6,
@@ -578,6 +583,7 @@ export const Createcardstyle = StyleSheet.create({
     width: '58%',
     height: '89%',
     alignSelf: 'center',
+    maxWidth: 300,
     marginTop: 20,
   },
 
@@ -605,15 +611,13 @@ export const Createcardstyle = StyleSheet.create({
   addimageview: {
     borderColor: 'black',
     borderStyle: 'dashed',
-    padding: 20,
-    margin: 15,
+    padding: 10,
     borderWidth: 1,
-    width: 150,
-    height: 120,
+    width: '100%',
+    height: 100,
     alignItems: 'center',
     borderRadius: 20,
     justifyContent: 'center',
-    overflow: 'hidden',
   },
 
   customcardtxt: {
@@ -625,10 +629,11 @@ export const Createcardstyle = StyleSheet.create({
   adddetailsview: {
     borderColor: 'black',
     borderStyle: 'solid',
-    padding: 20,
-    margin: 15,
+    padding: 15,
+    margin: 8,
     borderWidth: 1,
-    width: 150,
+    width: '44%',
+    minHeight: 100,
     alignItems: 'center',
     borderRadius: 20,
   },
@@ -737,10 +742,12 @@ export const Createcardstyle = StyleSheet.create({
   },
   modelinput: {
     marginLeft: 10,
+    marginRight: 10,
     borderColor: 'white',
     borderWidth: 1,
     borderRadius: 20,
     padding: 15,
+    width: 'auto',
   },
   modelviewbtn: {
     flexDirection: 'row',
@@ -749,11 +756,13 @@ export const Createcardstyle = StyleSheet.create({
   },
   modelbtn: {
     backgroundColor: 'black',
-    margin: 10,
+    margin: 8,
     borderRadius: 20,
     padding: 10,
-    width: 100,
+    minWidth: 90,
     height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   requiredmsg: {
     color: 'red',
@@ -775,14 +784,12 @@ export const bgimage = StyleSheet.create({
     borderRadius: 20,
   },
   custmbg: {
-    margin: 10,
-    borderColor: 'black',
+    marginVertical: 10,
     width: '100%',
     height: 200,
     borderRadius: 20,
-    borderWidth: 1,
     alignSelf: 'center',
-    padding: 2,
+    overflow: 'hidden',
   },
   txt: {
     margin: 5,
@@ -806,11 +813,76 @@ export const bgimage = StyleSheet.create({
   addimgview: {
     backgroundColor: '#222',
     padding: 20,
-    width: 160,
+    width: '100%',
+    height: 100,
+    alignItems: 'center',
+    borderRadius: 20,
+    marginVertical: 8,
+  },
+  defaultimage: {
+    width: '100%',
+    height: 100,
+    alignItems: 'center',
+    borderRadius: 20,
+    marginVertical: 8,
+  },
+  detailstitle: {
+    marginVertical: 10,
+    fontSize: 16,
+    fontWeight: '600',
+    alignSelf: 'center',
+  },
+  detailssubtitle: {
+    marginVertical: 5,
+    fontSize: 13,
+  },
+  position: {
     height: 100,
     alignItems: 'center',
     borderRadius: 20,
     margin: 10,
+    borderColor: '#222',
+    borderWidth: 1,
+  },
+  positionsubview: {
+    backgroundColor: '#222',
+    width: '30%',
+    height: '30%',
+    borderRadius: 10,
+    margin: 10,
+  },
+  detailsbtn: {
+    backgroundColor: '#FE3D12',
+    margin: 10,
+    borderRadius: 50,
+    padding: 5,
+    alignItems: 'center',
+  },
+  detailsbtntxt: {
+    color: 'white',
+    padding: 5,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+  qrsize: {
+    borderColor: '#222',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 10,
+    width: '30%',
+    backgroundColor: '#E5E0D3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  viewbackground: {
+    width: 230,
+    height: 250,
+    backgroundColor: '#E8E2D3',
+    borderRadius: 15,
+    marginTop: 20,
+    marginLeft: 20,
+    overflow: 'hidden',
+    alignSelf: 'center',
   },
 });
 
@@ -841,12 +913,11 @@ export const analytics_style = StyleSheet.create({
   },
 
   table_body: {
-    backgroundColor:"#E5E0D3",
-    elevation:5,
+    backgroundColor: '#E5E0D3',
+    elevation: 5,
     borderRadius: 20,
     margin: 10,
     padding: 5,
-    
   },
 
   table_header_txt: {
@@ -926,10 +997,30 @@ export const analytics_style = StyleSheet.create({
     margin: 5,
     borderRadius: 20,
   },
-  body_title:{
-    fontWeight:"bold",
-    marginRight:2,
-    fontSize:13,
-    color:"#222222"
-  }
+  body_title: {
+    fontWeight: 'bold',
+    marginRight: 2,
+    fontSize: 13,
+    color: '#222222',
+  },
+});
+
+export const Contactstyle = StyleSheet.create({
+  modelInput: {
+    marginLeft: 10,
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 15,
+    width: 100,
+  },
+  modelbtn: {
+    marginLeft: 10,
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 20,
+    width: 100,
+    alignItems: 'center',
+    padding: 10,
+  },
 });
