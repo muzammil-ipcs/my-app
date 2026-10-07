@@ -411,6 +411,7 @@ export const cardstyle = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
+    alignSelf: 'center',
   },
   notselect: {
     flexDirection: 'row',
@@ -572,6 +573,8 @@ export const cardstyle = StyleSheet.create({
     marginLeft: 54,
     zIndex: 2,
     backgroundColor: 'white',
+    paddingVertical: 5,
+    overflow: 'hidden',
   },
   getcardview: {
     flex: 1,
@@ -638,8 +641,9 @@ export const Createcardstyle = StyleSheet.create({
     borderRadius: 20,
   },
   gallaryimg: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
+    margin: 5,
   },
   cameraicon: {
     width: 24,
@@ -682,12 +686,14 @@ export const Createcardstyle = StyleSheet.create({
 
     zIndex: 2,
     elevation: 10,
+    overflow: 'hidden',
   },
   name: {
     fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'center',
     margin: 5,
+    textAlign: 'center',
     flexShrink: 1,
   },
   role: {
@@ -895,7 +901,17 @@ export const Qrcode_style = StyleSheet.create({
     alignSelf: 'center',
     margin: 10,
   },
-  qr_dwld_btn: {},
+  qr_dwld_btn: {
+    backgroundColor: '#FE3D12',
+    margin: 10,
+    borderRadius: 50,
+    padding: 10,
+  },
+  btntxt: {
+    color: 'white',
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
 });
 
 export const analytics_style = StyleSheet.create({
@@ -1022,5 +1038,122 @@ export const Contactstyle = StyleSheet.create({
     width: 100,
     alignItems: 'center',
     padding: 10,
+  },
+});
+
+export const Walletstyle = StyleSheet.create({
+  genrateview: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 10,
+    alignSelf: 'center',
+    width: '90%',
+    margin: 5,
+    elevation: 5,
+  },
+  image1: {
+    borderRadius: 100,
+    width: 35,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image2: {
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    borderRadius: 20,
+    marginLeft: 'auto',
+  },
+  preview: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 10,
+    alignSelf: 'center',
+    width: '70%',
+    margin: 5,
+    elevation: 5,
+  },
+  genratepassbtn: {
+    backgroundColor: '#F5F2E9',
+    padding: 8,
+    alignItems: 'center',
+    borderRadius: 20,
+  },
+  detailstitletxt: {
+    fontWeight: 'bold',
+    marginVertical: 5,
+    margin: 2,
+  },
+  details_input: {
+    backgroundColor: '#F5F2E9',
+    padding: 10,
+    borderRadius: 20,
+    margin: 5,
+    textAlign: 'left',
+  },
+  thembtn: {
+    borderRadius: 50,
+    padding: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    margin: 5,
+  },
+  uploadimage: {
+    borderColor: '#F5F2E9',
+    borderStyle: 'dashed',
+    borderWidth: 2,
+    alignItems: 'center',
+    borderRadius: 50,
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  upload_image_showview: {
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    backgroundColor: '#F5F2E9',
+    borderRadius: 15,
+    margin: 5,
+    justifyContent: 'center',
+  },
+  save_wallet_btn: {
+    backgroundColor: '#F5F2E9',
+    padding: 8,
+    alignItems: 'center',
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  wallet_qr_view: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    margin: 5,
+    marginTop: 15,
+    padding: 10,
+  },
+  barnding_view: {
+    flexDirection: 'row',
+    gap: 5,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 5,
+    paddingLeft: 10,
+    backgroundColor: 'backgoundColor',
+    marginBottom: 8,
+  },
+  wallet_open_btnniew: {
+    padding: 5,
+    borderWidth: 2,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderColor: '#F5F2E9',
+    margin: 5,
+  },
+  wallet_details_txt: {
+    fontSize: 14,
+    flexShrink: 1,
   },
 });
