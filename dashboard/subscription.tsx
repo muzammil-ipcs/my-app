@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { stylehome } from '../Style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from '../api/Config';
 
 export function Plans({ navigation, route }: any) {
   const [yearly, setYearly] = useState(false);
@@ -32,7 +33,7 @@ export function Plans({ navigation, route }: any) {
   useEffect(() => {
     async function GetPlan() {
       try {
-        const response = await fetch('http://10.0.2.2:5004/api/plan/public', {
+        const response = await fetch(`${API_BASE_URL}/api/plan/public`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -54,12 +55,12 @@ export function Plans({ navigation, route }: any) {
       }
     }
     GetPlan();
-  },[]);
+  }, []);
   async function Freeplan() {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/subscription/create-checkout-session',
+        `${API_BASE_URL}/api/subscription/create-checkout-session`,
         {
           method: 'POST',
           headers: {
@@ -91,7 +92,7 @@ export function Plans({ navigation, route }: any) {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/subscription/create-checkout-session',
+        `${API_BASE_URL}/api/subscription/create-checkout-session`,
         {
           method: 'POST',
           headers: {
@@ -124,7 +125,7 @@ export function Plans({ navigation, route }: any) {
       console.log(token);
 
       const response = await fetch(
-        'http://10.0.2.2:5004/api/subscription/create-checkout-session',
+        `${API_BASE_URL}/api/subscription/create-checkout-session`,
         {
           method: 'POST',
           headers: {

@@ -10,6 +10,7 @@ import { Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import RNFS from "react-native-fs"
 import { Alert } from 'react-native';
+import { API_BASE_URL } from '../api/Config';
 
 export function Bgimage() {
   const navigation = useNavigation<any>();
@@ -30,7 +31,7 @@ export function Bgimage() {
       const token = await AsyncStorage.getItem('token');
       const user_id = await AsyncStorage.getItem('user_Id');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/wallpaper/mylist',
+        `${API_BASE_URL}/api/wallpaper/mylist`,
         {
           method: 'POST',
           headers: {
@@ -122,7 +123,7 @@ async function downloadBackground(wallpaperImage: string) {
     const downloadPath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
     const imageUrl =
-      'http://10.0.2.2:5004/public/' + wallpaperImage;
+      `${API_BASE_URL}/public/` + wallpaperImage;
 
     console.log('Downloading image from:', imageUrl);
     console.log('Saving image to:', downloadPath);
@@ -158,7 +159,7 @@ async function downloadBackground(wallpaperImage: string) {
     const token = await AsyncStorage.getItem('token');
 
     const response = await fetch(
-      'http://10.0.2.2:5004/api/wallpaper/delete',
+      `${API_BASE_URL}/api/wallpaper/delete`,
       {
         method: 'POST',
         headers: {
@@ -228,7 +229,7 @@ async function downloadBackground(wallpaperImage: string) {
                       <Image
                         source={{
                           uri:
-                            'http://10.0.2.2:5004/public/' +
+                            `${API_BASE_URL}/public/` +
                             item.wallpaper_image,
                         }}
                         style={{ width: '100%', height: '100%' }}

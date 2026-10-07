@@ -3,6 +3,7 @@ import { cardstyle } from '../Style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
+import { API_BASE_URL } from '../api/Config';
 
 export function Bill() {
   const [listofinvoice, setListofnvoice] = useState<any>([]);
@@ -23,7 +24,7 @@ export function Bill() {
         console.log(token);
         console.log('fetching Invoice');
         const response = await fetch(
-          'http://10.0.2.2:5004/api/subscription/invoices',
+          `${API_BASE_URL}/api/subscription/invoices`,
           {
             method: 'GET',
             headers: {
@@ -46,7 +47,7 @@ export function Bill() {
       try {
         const token = await AsyncStorage.getItem('token');
         const reponse = await fetch(
-          'http://10.0.2.2:5004/api/subscription/me',
+          `${API_BASE_URL}/api/subscription/me`,
           {
             method: 'GET',
             headers: {

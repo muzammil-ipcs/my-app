@@ -1,4 +1,5 @@
 import  AsyncStorage from "@react-native-async-storage/async-storage"
+import { API_BASE_URL } from "./Config";
 
 
 
@@ -12,7 +13,7 @@ export async function Restpassword(currentpass:string,newpassword:string){
         console.log(token)
         console.log("current password : ",currentpass)
         console.log("new password : ",newpassword)
-        const response = await fetch("http://10.0.2.2:5004/api/users/changepassword",{
+        const response = await fetch(`${API_BASE_URL}/api/users/changepassword`,{
             method:"POST",
             headers:{
                 "Content-type":"application/json",

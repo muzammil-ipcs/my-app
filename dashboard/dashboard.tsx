@@ -69,7 +69,7 @@ export function Dashboard({navigation}:{navigation:any}) {
           }}
         >
           <View
-            style={select === 'card' ? cardstyle.logoview : cardstyle.notselect}
+            style={[select === 'card' ? [cardstyle.logoview] : cardstyle.notselect,]}
           >
             <Mycard width={22} height={22} />
 

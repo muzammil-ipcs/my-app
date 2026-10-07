@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
 import RNFS from 'react-native-fs';
+import { API_BASE_URL, CARD_BASE_URL } from '../api/Config';
 
 export function Createbg() {
   const navigation = useNavigation<any>();
@@ -53,7 +54,7 @@ export function Createbg() {
         const token = await AsyncStorage.getItem('token');
         const user_Id = await AsyncStorage.getItem('user_Id');
         const response = await fetch(
-          'http://10.0.2.2:5004/api/businesscard/getBcardWithUserId',
+          `${API_BASE_URL}/api/businesscard/getBcardWithUserId`,
           {
             method: 'POST',
             headers: {
@@ -112,6 +113,7 @@ export function Createbg() {
         };
         setBgname('');
         setSelectimg(newImg);
+
         // The API stores wallpaper_image on disk and saves its path in MongoDB.
         // Keep the base64 value out of background_value to avoid storing it twice.
         setBackgroundvalue(asset.uri);
@@ -171,7 +173,7 @@ export function Createbg() {
     }
   }
 
-  const qrcode_url = bcard_url ? `http://10.0.2.2:5173/card/${bcard_url}` : '';
+  const qrcode_url = bcard_url ? `${CARD_BASE_URL}/card/${bcard_url}` : '';
   console.log('qr code url:', qrcode_url);
 
   async function downloadPng(screenshotUri: string) {
@@ -268,7 +270,7 @@ export function Createbg() {
         wallpaper_image: screenshotBase64,
       };
 
-      const response = await fetch('http://10.0.2.2:5004/api/wallpaper/add', {
+      const response = await fetch(`${API_BASE_URL}/api/wallpaper/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

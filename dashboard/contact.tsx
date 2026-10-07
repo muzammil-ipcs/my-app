@@ -9,6 +9,7 @@ import { Image } from 'react-native';
 import { TextInput } from 'react-native';
 import Cancel from '../assets/cancel.svg';
 import Save from '../assets/save.svg';
+import { API_BASE_URL } from '../api/Config';
 
 export function Contact() {
   const [result, setResult] = useState<any[]>([]);
@@ -30,7 +31,7 @@ export function Contact() {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/reference/myreferences',
+        `${API_BASE_URL}/api/reference/myreferences`,
         {
           method: 'POST',
           headers: {
@@ -55,7 +56,7 @@ export function Contact() {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/reference/delete',
+        `${API_BASE_URL}/api/reference/delete`,
         {
           method: 'POST',
           headers: {
@@ -78,7 +79,7 @@ export function Contact() {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        'http://10.0.2.2:5004/api/reference/update',
+        `${API_BASE_URL}/api/reference/update`,
         {
           method: 'POST',
           headers: {

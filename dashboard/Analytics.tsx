@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native';
+import { API_BASE_URL } from '../api/Config';
 
 interface Activity {
   _id: string;
@@ -31,7 +32,7 @@ export function Analytics() {
         const user_id = await AsyncStorage.getItem('user_id');
         const token = await AsyncStorage.getItem('token');
         const response = await fetch(
-          'http://10.0.2.2:5004/api/analytics/user-stats',
+          `${API_BASE_URL}/api/analytics/user-stats`,
           {
             method: 'POST',
             headers: {
@@ -72,7 +73,7 @@ export function Analytics() {
         }
 
         const response = await fetch(
-          'http://10.0.2.2:5004/api/analytics/list',
+          `${API_BASE_URL}/api/analytics/list`,
           {
             method: 'POST',
             headers: {

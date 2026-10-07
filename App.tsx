@@ -19,6 +19,7 @@ import { Dashboard } from './dashboard/dashboard';
 import { Creatcard } from './dashboard/CreateCard';
 import { Createbg } from './dashboard/createbgimage';
 import { Plans } from './dashboard/subscription';
+import { API_BASE_URL } from './api/Config';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export type RootStackParamList = {
@@ -214,7 +215,6 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
   async function savedata() {
     try {
       await AsyncStorage.setItem('islogin', 'true');
-      await AsyncStorage.setItem('username', name);
       await AsyncStorage.setItem('email', logemail);
     } catch {
       console.log('user not login');
@@ -224,7 +224,7 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
   async function Data() {
     try {
       console.log('api fetch start');
-      const response = await fetch('http://10.0.2.2:5004/api/users/register', {
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: 'POST',
 
         headers: {
@@ -253,7 +253,7 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
   async function Verifyotp() {
     try {
       console.log('verify start');
-      const response = await fetch('http://10.0.2.2:5004/api/users/verifyotp', {
+      const response = await fetch(`${API_BASE_URL}/api/users/verifyotp`, {
         method: 'POST',
         headers: {
           'Content-type': 'Application/json',
@@ -279,7 +279,7 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
 
   async function Resendotp() {
     try {
-      const response = await fetch('http://10.0.2.2:5004/api/users/resendotp', {
+      const response = await fetch(`${API_BASE_URL}/api/users/resendotp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'applicatipn/json',
@@ -305,7 +305,7 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
     try {
       console.log('fetch start');
 
-      const response = await fetch('http://10.0.2.2:5004/api/users/login', {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: 'POST',
 
         headers: {
@@ -324,10 +324,12 @@ function Main({ navigation }: { navigation: MainNavigationProp }) {
       if (data.code === 200) {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem("user_Id", data._id);
+        await AsyncStorage.setItem("username",data.username);
+        console.log("username",data.username )
         console.log(data.token);
         console.log(data._id);
         console.log(data.code);
-        savedata();
+        await savedata();
         navigation.navigate('Dashboard');
       } else {
         setLogapimsg(data.message);
