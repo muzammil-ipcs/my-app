@@ -1,6 +1,6 @@
 import { View, Image, Pressable, Animated } from 'react-native';
 import { cardstyle, Createcardstyle, Style } from '../Style';
-import { Text } from 'react-native';
+import { Text, Easing } from 'react-native';
 import { ScrollView } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -10,6 +10,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import Countrypicker, {
   Country,
   CountryCode,
+  FlagType,
+  getAllCountries,
 } from 'react-native-country-picker-modal';
 import Website from '../assets/website.svg';
 import Facebook from '../assets/facebook.svg';
@@ -21,8 +23,8 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { RootStackParamList } from '../App';
 import { TEMPLATE_ID_PREMIUM } from '../App';
-
-const API_BASE_URL = 'http://10.0.2.2:5004';
+import { API_BASE_URL } from '../api/Config';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 function normalizeImageUrl(value?: string | null): string | null {
   if (!value) {
@@ -40,7 +42,7 @@ function normalizeImageUrl(value?: string | null): string | null {
   return `${API_BASE_URL}/public/${value}`;
 }
 
-export function Creatcard(navigation: any) {
+export function Creatcard() {
   const route = useRoute<RouteProp<RootStackParamList, 'Createcard'>>();
   const [step, setStep] = useState<any>('1');
   const [componylogo, setComponylogo] = useState<any>();
@@ -98,14 +100,42 @@ export function Creatcard(navigation: any) {
       setLinedin(editbcard.sociallink_linkedIn);
       setX(editbcard.sociallink_twitter);
 
-      const Phone = editbcard.cellPhone;
+      const phone = editbcard.cellPhone || '';
+      const parsedPhone = parsePhoneNumberFromString(phone);
 
-      if (Phone.startsWith('+1')) {
-        setCallcode('1');
-        setMobile(Phone.substring(2));
-      } else {
-        setMobile(Phone);
+      if (!parsedPhone) {
+        setMobile(phone);
+        return;
       }
+
+      const initializePhoneFields = async () => {
+        try {
+          const countries = await getAllCountries(FlagType.EMOJI);
+          const phoneCountry = parsedPhone.country
+            ? countries.find(country => country.cca2 === parsedPhone.country)
+            : undefined;
+          const pickerCallingCode =
+            phoneCountry?.callingCode[0] || parsedPhone.countryCallingCode;
+          const phoneDigits = phone.replace(/\D/g, '');
+
+          setCallcode(pickerCallingCode);
+          setMobile(
+            phoneDigits.startsWith(pickerCallingCode)
+              ? phoneDigits.slice(pickerCallingCode.length)
+              : parsedPhone.nationalNumber,
+          );
+
+          if (phoneCountry) {
+            setCountrycode(phoneCountry.cca2);
+          }
+        } catch (error) {
+          console.error('Unable to initialize saved phone number:', error);
+          setCallcode(parsedPhone.countryCallingCode);
+          setMobile(parsedPhone.nationalNumber);
+        }
+      };
+
+      initializePhoneFields();
     }
   }, [editbcard, isEditmode]);
 
@@ -163,7 +193,7 @@ export function Creatcard(navigation: any) {
         console.log('user card data: ', draft);
 
         const response = await fetch(
-          'http://10.0.2.2:5004/api/subscription/confirm-checkout-session',
+          `${API_BASE_URL}/api/subscription/confirm-checkout-session`,
           {
             method: 'POST',
 
@@ -205,7 +235,7 @@ export function Creatcard(navigation: any) {
           };
 
           const cardResponse = await fetch(
-            'http://10.0.2.2:5004/api/businesscard/addbusinesscard',
+            `${API_BASE_URL}/api/businesscard/addbusinesscard`,
             {
               method: 'POST',
               headers: {
@@ -258,40 +288,62 @@ export function Creatcard(navigation: any) {
   }
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  const scroll =
-    (website !== '' ? 1 : 0) +
-    (facebook !== '' ? 1 : 0) +
-    (insta !== '' ? 1 : 0) +
-    (linkedin !== '' ? 1 : 0) +
-    (x !== '' ? 1 : 0);
+  const socialIcons = [
+  website !== '' ? 'website' : null,
+  facebook !== '' ? 'facebook' : null,
+  insta !== '' ? 'insta' : null,
+  linkedin !== '' ? 'linkedin' : null,
+  x !== '' ? 'x' : null,
+].filter(Boolean) as string[];
 
-  useEffect(() => {
-    if (scroll === 3) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(scrollX, {
-            toValue: -70,
-            duration: 3000,
-            useNativeDriver: true,
-          }),
 
-          Animated.timing(scrollX, {
-            toValue: 0,
-            duration: 3000,
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
-    } else {
-      scrollX.stopAnimation();
-      scrollX.setValue(0);
+useEffect(() => {
+  scrollX.stopAnimation();
+  scrollX.setValue(0);
+
+  if (socialIcons.length > 1) {
+    const iconstep = 34;
+    const animations = [];
+
+    // Stop on every icon for 2.5 seconds
+    for (let i = 0; i < socialIcons.length; i++) {
+      animations.push(
+        Animated.delay(2500)
+      );
+
+      animations.push(
+        Animated.timing(scrollX, {
+          toValue: -(iconstep * (i + 1)),
+          duration: 700,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        })
+      );
     }
 
-    return () => {
-      scrollX.stopAnimation();
-    };
-  }, [scroll]);
+    // Stop on the first icon of the second set
+    animations.push(
+      Animated.delay(2500)
+    );
 
+    // Reset to the first icon
+    animations.push(
+      Animated.timing(scrollX, {
+        toValue: 0,
+        duration: 0,
+        useNativeDriver: true,
+      })
+    );
+
+    Animated.loop(
+      Animated.sequence(animations)
+    ).start();
+  }
+
+  return () => {
+    scrollX.stopAnimation();
+  };
+}, [socialIcons.length,scrollX]);
   async function uploadImage(assest: any, endpoint: string): Promise<string> {
     const formData = new FormData();
 
@@ -371,7 +423,7 @@ export function Creatcard(navigation: any) {
       const nextCompanyLogo = companyfilename || editbcard?.comapny_logo || '';
 
       const response = await fetch(
-        `http://10.0.2.2:5004/api/businesscard/editBusinesscarddata?id=${bcard_id}`,
+        `${API_BASE_URL}/api/businesscard/editBusinesscarddata?id=${bcard_id}`,
         {
           method: 'POST',
           headers: {
@@ -409,6 +461,11 @@ export function Creatcard(navigation: any) {
     }
   }
 
+  const capitalizeFirstLetter = (value: string) => {
+    if (!value) return '';
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F5F2E9' }}>
       <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
@@ -441,25 +498,40 @@ export function Creatcard(navigation: any) {
         </View>
         <View style={Createcardstyle.frame2}>
           {isEditmode === 'edit' ? (
-            <Text style={Createcardstyle.name}>
+            <Text numberOfLines={2} style={Createcardstyle.name}>
               {name.prefix || name.firstname || name.lastname
-                ? (name.prefix ? name.prefix + '.' : '') +
-                  name.firstname +
-                  ' ' +
-                  name.lastname
-                : (editbcard.namePrefix ? editbcard.namePrefix + '.' : '') +
-                  editbcard.firstName +
-                  ' ' +
-                  editbcard.lastName}
+                ? (name.prefix
+                    ? capitalizeFirstLetter(name.prefix) + '. '
+                    : '') +
+                  (name.firstname
+                    ? capitalizeFirstLetter(name.firstname)
+                    : '') +
+                  (name.lastname
+                    ? ' ' + capitalizeFirstLetter(name.lastname)
+                    : '')
+                : (editbcard.namePrefix
+                    ? capitalizeFirstLetter(editbcard.namePrefix) + '. '
+                    : '') +
+                  (editbcard.firstName
+                    ? capitalizeFirstLetter(editbcard.firstName)
+                    : '') +
+                  (editbcard.lastName
+                    ? ' ' + capitalizeFirstLetter(editbcard.lastName)
+                    : '')}
             </Text>
           ) : (
             <Text style={Createcardstyle.name}>
               {name.prefix || name.firstname || name.lastname
-                ? (name.prefix ? name.prefix + '.' : '') +
-                  name.firstname +
-                  ' ' +
-                  name.lastname
-                : 'JHON'}
+                ? (name.prefix
+                    ? capitalizeFirstLetter(name.prefix) + '. '
+                    : '') +
+                  (name.firstname
+                    ? capitalizeFirstLetter(name.firstname)
+                    : '') +
+                  (name.lastname
+                    ? ' ' + capitalizeFirstLetter(name.lastname)
+                    : '')
+                : 'Jhon'}
             </Text>
           )}
           <Text style={Createcardstyle.role}>
@@ -510,7 +582,7 @@ export function Creatcard(navigation: any) {
             </Pressable>
 
             <View
-              style={{ maxWidth: 70, overflow: 'hidden', flexDirection: 'row' }}
+              style={{ width: 34, height:34, overflow: 'hidden', }}
             >
               <Animated.View
                 style={{
@@ -520,6 +592,11 @@ export function Creatcard(navigation: any) {
               >
                 {website !== '' && (
                   <Pressable
+                    style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => {
                       const url = website.startsWith('https://')
                         ? website
@@ -535,6 +612,11 @@ export function Creatcard(navigation: any) {
                 )}
                 {facebook !== '' && (
                   <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => {
                       Linking.openURL(facebook);
                     }}
@@ -545,6 +627,11 @@ export function Creatcard(navigation: any) {
 
                 {insta !== '' && (
                   <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => {
                       Linking.openURL(insta);
                     }}
@@ -555,6 +642,11 @@ export function Creatcard(navigation: any) {
 
                 {linkedin !== '' && (
                   <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => {
                       Linking.openURL(linkedin);
                     }}
@@ -565,6 +657,93 @@ export function Creatcard(navigation: any) {
 
                 {x !== '' && (
                   <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      Linking.openURL(x);
+                    }}
+                  >
+                    <Twitter width={24} height={24} style={{ margin: 5 }} />
+                  </Pressable>
+                )}
+
+                {/* Second Identical Set Of Icon */}
+
+                {website !== '' && (
+                  <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      const url = website.startsWith('https://')
+                        ? website
+                        : 'https://' + website;
+                      Linking.openURL(url);
+                      console.log(website);
+                    }}
+                  >
+                    <View>
+                      <Website width={24} height={24} style={{ margin: 5 }} />
+                    </View>
+                  </Pressable>
+                )}
+                {facebook !== '' && (
+                  <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      Linking.openURL(facebook);
+                    }}
+                  >
+                    <Facebook width={24} height={24} style={{ margin: 5 }} />
+                  </Pressable>
+                )}
+
+                {insta !== '' && (
+                  <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      Linking.openURL(insta);
+                    }}
+                  >
+                    <Insta width={24} height={24} style={{ margin: 5 }} />
+                  </Pressable>
+                )}
+
+                {linkedin !== '' && (
+                  <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => {
+                      Linking.openURL(linkedin);
+                    }}
+                  >
+                    <Linkedin width={24} height={24} style={{ margin: 5 }} />
+                  </Pressable>
+                )}
+
+                {x !== '' && (
+                  <Pressable
+                  style={{
+                      width: 34,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => {
                       Linking.openURL(x);
                     }}
@@ -667,7 +846,7 @@ export function Creatcard(navigation: any) {
                     {componylogo ? (
                       <Image
                         source={{ uri: componylogo }}
-                        style={Createcardstyle.gallaryimg}
+                        style={[Createcardstyle.gallaryimg]}
                         resizeMode="cover"
                       />
                     ) : (
