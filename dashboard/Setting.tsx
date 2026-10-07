@@ -21,26 +21,29 @@ export function Cardsetting() {
 
   const { animationbtn, onpressin, onpressout } = usePressanimation();
 
-  const [username, setUsername] = useState<any>('');
-  const [email, setEmail] = useState<any>('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    async function loadAccountDetails() {
+      try {
+        const [storedUsername, storedEmail] = await Promise.all([
+          AsyncStorage.getItem('username'),
+          AsyncStorage.getItem('email'),
+        ]);
+        await setUsername(storedUsername ?? '');
+        await setEmail(storedEmail ?? '');
+
+      } catch (error) {
+        console.error('Failed to load account details:', error);
+      }
+    }
+
+    loadAccountDetails();
+  }, []);
 
   const [msg, setMsg] = useState('');
   const [updated, setUpdated] = useState(false);
-
-  async function Userdetails() {
-    const Name = await AsyncStorage.getItem('username');
-    const Email = await AsyncStorage.getItem('email');
-
-    console.log('username', Name);
-    console.log('email', Email);
-
-    setUsername(Name);
-    setEmail(Email);
-  }
-
-  useEffect(() => {
-    Userdetails();
-  }, []);
 
   async function check_password() {
     if(currentpass === ""){
@@ -112,7 +115,7 @@ export function Cardsetting() {
                 <Username_icon width={22} height={22} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: 'grey' }}> Username </Text>
+                <Text style={{ color: 'grey', }}> Username </Text>
                 <Text style={{ flexShrink: 1, marginLeft: 10 }}>
                   {username}
                 </Text>
@@ -124,7 +127,7 @@ export function Cardsetting() {
                 <Email_icon width={22} height={22} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: 'grey', marginLeft: 10 }}> Email </Text>
+                <Text style={{ color: 'grey',  }}> Email </Text>
                 <Text style={{ flexShrink: 1, marginLeft: 10 }}>{email}</Text>
               </View>
             </View>
